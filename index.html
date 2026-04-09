@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Family Millionaires 👑</title>
+<title>Family Miljonairs 👑</title>
 <style>
 :root{--gold:#f0c040;--gold2:#e8952a;--deep:#030a18;--mid:#071428;--card:#0a1e3a;--hover:#0e2a50;--green:#22c55e;--red:#ef4444;--text:#e8f0ff;--muted:#7090b8}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
@@ -61,13 +61,15 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--deep);color:va
 
 /* ─── GAME ─── */
 #s-game{background:var(--deep);position:relative}
-.ghdr{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:rgba(0,0,10,.55);border-bottom:1px solid rgba(255,255,255,.07);flex-shrink:0;gap:8px}
+.ghdr{display:flex;flex-direction:column;background:rgba(0,0,10,.65);border-bottom:1px solid rgba(255,255,255,.07);flex-shrink:0}
+.ghdr-top{display:flex;align-items:center;padding:8px 12px;gap:8px}
+.ghdr-bot{display:flex;align-items:center;padding:4px 10px 8px;gap:7px}
 
 /* Character avatar with animations */
-.plr-chip{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:5px 10px}
-.plr-img-wrap{position:relative;width:36px;flex-shrink:0}
-.plr-img{width:36px;height:44px;object-fit:cover;object-position:top;border-radius:6px;border:1.5px solid var(--gold);display:block}
-.plr-emotion{position:absolute;top:-8px;right:-8px;font-size:1rem;animation:popIn .3s cubic-bezier(.34,1.56,.64,1);z-index:5}
+.plr-chip{display:flex;align-items:center;gap:8px;flex:1}
+.plr-img-wrap{position:relative;width:34px;flex-shrink:0}
+.plr-img{width:34px;height:42px;object-fit:cover;object-position:top;border-radius:6px;border:1.5px solid var(--gold);display:block}
+.plr-emotion{position:absolute;top:-8px;right:-8px;font-size:.9rem;animation:popIn .3s cubic-bezier(.34,1.56,.64,1);z-index:5}
 @keyframes popIn{from{transform:scale(0)}to{transform:scale(1)}}
 /* Character states */
 .plr-img.thinking{animation:think 1.2s ease-in-out infinite}
@@ -80,24 +82,34 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--deep);color:va
 @keyframes sway{0%,100%{transform:translateX(0) rotate(0)}33%{transform:translateX(2px) rotate(1deg)}66%{transform:translateX(-1px) rotate(-1deg)}}
 .plr-img.sweat{animation:sweat .5s ease-in-out infinite}
 @keyframes sweat{0%,100%{transform:scale(1)}50%{transform:scale(.98)}}
-.plr-name{font-size:.78rem;font-weight:700;color:var(--gold)}
-.plr-q{font-size:.6rem;color:var(--muted)}
+.plr-name{font-size:.8rem;font-weight:700;color:var(--gold)}
+.plr-q{font-size:.58rem;color:var(--muted)}
 
-.prize-mid{text-align:center;flex:1}
-.prize-mid .amt{font-size:1.05rem;font-weight:900;color:var(--gold);text-shadow:0 0 10px rgba(240,192,64,.4)}
-.prize-mid .lbl{font-size:.58rem;color:var(--muted);text-transform:uppercase;letter-spacing:1px}
+.prize-chip{background:linear-gradient(135deg,rgba(240,192,64,.15),rgba(232,149,42,.1));border:1px solid rgba(240,192,64,.4);border-radius:10px;padding:5px 12px;text-align:center;flex-shrink:0}
+.prize-chip .amt{font-size:1.1rem;font-weight:900;color:var(--gold);text-shadow:0 0 8px rgba(240,192,64,.5);display:block;line-height:1.1}
+.prize-chip .lbl{font-size:.5rem;color:var(--muted);text-transform:uppercase;letter-spacing:1px}
 
-.lls{display:flex;gap:5px}
-.ll{background:rgba(255,255,255,.08);border:1.5px solid rgba(255,255,255,.2);border-radius:10px;padding:5px 7px;cursor:pointer;font-size:.6rem;font-weight:700;color:white;text-align:center;line-height:1.3;transition:all .2s;min-width:42px}
-.ll .li{font-size:1rem;display:block;line-height:1}
+.lls{display:flex;gap:6px;width:100%}
+.ll{flex:1;background:rgba(255,255,255,.07);border:1.5px solid rgba(255,255,255,.18);border-radius:10px;padding:6px 4px;cursor:pointer;font-size:.6rem;font-weight:700;color:white;text-align:center;line-height:1.3;transition:all .2s}
+.ll .li{font-size:.95rem;display:block;line-height:1.1}
 .ll:hover:not(.used){border-color:var(--gold);background:rgba(240,192,64,.15)}
 .ll.used{opacity:.25;cursor:not-allowed;text-decoration:line-through}
 
-/* Timer bar */
-.tbar-wrap{height:6px;background:rgba(255,255,255,.07);flex-shrink:0;position:relative}
-.tbar{height:100%;background:linear-gradient(90deg,var(--gold2),var(--gold));transition:width 1s linear,background .5s}
-.tbar.urg{background:linear-gradient(90deg,#dc2626,#ef4444);animation:tbar-pulse .5s ease-in-out infinite}
-@keyframes tbar-pulse{0%,100%{opacity:1}50%{opacity:.6}}
+/* Timer bar — thick and prominent */
+.tbar-wrap{height:22px;background:rgba(255,255,255,.06);flex-shrink:0;position:relative;overflow:hidden}
+.tbar{height:100%;background:linear-gradient(90deg,var(--gold2),var(--gold));transition:width 1s linear,background .5s;position:relative}
+.tbar.urg{background:linear-gradient(90deg,#dc2626,#ef4444);animation:tbar-pulse .4s ease-in-out infinite}
+@keyframes tbar-pulse{0%,100%{opacity:1}50%{opacity:.55}}
+.tbar-num{position:absolute;right:8px;top:50%;transform:translateY(-50%);font-size:.75rem;font-weight:900;color:rgba(0,0,0,.7);z-index:2;pointer-events:none;mix-blend-mode:multiply}
+.tbar-num.light{color:rgba(255,255,255,.9);mix-blend-mode:normal}
+
+/* Ladder strip */
+.ldr-strip{display:flex;overflow-x:auto;gap:4px;padding:5px 10px;background:rgba(0,0,0,.3);border-top:1px solid rgba(255,255,255,.06);flex-shrink:0;scrollbar-width:none}
+.ldr-strip::-webkit-scrollbar{display:none}
+.lsi{flex-shrink:0;padding:3px 8px;border-radius:6px;font-size:.62rem;font-weight:700;color:var(--muted);border:1px solid rgba(255,255,255,.08);white-space:nowrap}
+.lsi.safe{color:var(--gold);border-color:rgba(240,192,64,.4)}
+.lsi.cur{background:linear-gradient(135deg,var(--gold2),var(--gold));color:#000;border-color:var(--gold);font-size:.68rem;transform:scale(1.05)}
+.lsi.done{color:var(--green);border-color:rgba(34,197,94,.3)}
 
 /* DANGER POPUP */
 #danger-pop{position:fixed;top:0;left:0;right:0;pointer-events:none;z-index:999;display:flex;justify-content:center;padding-top:60px;opacity:0;transition:opacity .2s}
@@ -254,7 +266,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--deep);color:va
 <!-- ═══ INTRO ═══ -->
 <div id="s-intro" class="screen active">
   <span class="logo-crown">👑</span>
-  <h1 class="logo-title">Family<br>Millionaires</h1>
+  <h1 class="logo-title">Family<br>Miljonairs</h1>
   <p class="logo-sub">De ultieme familiequiz</p>
   <div class="intro-prize"><small>Hoofdprijs</small>€1.000.000</div>
   <button class="btn-play" onclick="goName()">▶ SPEEL NU</button>
@@ -292,48 +304,50 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--deep);color:va
 <!-- ═══ GAME ═══ -->
 <div id="s-game" class="screen">
   <div class="ghdr">
-    <div class="plr-chip">
-      <div class="plr-img-wrap">
-        <img class="plr-img idle" id="g-img" src="" alt="">
-        <span class="plr-emotion" id="g-emo" style="display:none"></span>
+    <div class="ghdr-top">
+      <div class="plr-chip">
+        <div class="plr-img-wrap">
+          <img class="plr-img idle" id="g-img" src="" alt="">
+          <span class="plr-emotion" id="g-emo" style="display:none"></span>
+        </div>
+        <div>
+          <div class="plr-name" id="g-name">–</div>
+          <div class="plr-q">Vraag <span id="g-qn">1</span> / 15</div>
+        </div>
       </div>
-      <div>
-        <div class="plr-name" id="g-name">–</div>
-        <div class="plr-q">Vraag <span id="g-qn">1</span>/15</div>
+      <div class="prize-chip">
+        <small class="lbl">Te winnen</small>
+        <span class="amt" id="g-prize">€100</span>
       </div>
     </div>
-    <div class="prize-mid">
-      <div class="lbl">Te winnen</div>
-      <div class="amt" id="g-prize">€100</div>
-    </div>
-    <div class="lls">
-      <button class="ll" id="ll0" onclick="use5050()"><span class="li">½</span>50/50</button>
-      <button class="ll" id="ll1" onclick="useBel()"><span class="li">📞</span>Bel</button>
-      <button class="ll" id="ll2" onclick="usePub()"><span class="li">👥</span>Publiek</button>
+    <div class="ghdr-bot">
+      <div class="lls">
+        <button class="ll" id="ll0" onclick="use5050()"><span class="li">½</span>50/50</button>
+        <button class="ll" id="ll1" onclick="useBel()"><span class="li">📞</span>Bel</button>
+        <button class="ll" id="ll2" onclick="usePub()"><span class="li">👥</span>Publiek</button>
+      </div>
     </div>
   </div>
-  <div class="tbar-wrap"><div class="tbar" id="tbar"></div></div>
+
+  <div class="tbar-wrap">
+    <div class="tbar" id="tbar"></div>
+    <span class="tbar-num light" id="g-tsec">30</span>
+  </div>
+
   <div id="danger-pop"><div class="danger-msg" id="danger-txt">⚡ KIES SNEL!</div></div>
   <div id="red-flash"></div>
 
   <div class="gbody">
-    <div class="qmeta">
-      <span class="qlbl">Vraag <span id="g-qn2">1</span> van 15</span>
-      <span class="qtnum" id="g-tsec">30</span>
-    </div>
     <div class="qcard" id="g-q">–</div>
     <div class="answers" id="g-ans"></div>
   </div>
 
-  <div class="gfoot">
-    <div class="safebadge" id="safebadge">🔒 Veilig: €0</div>
-    <button class="btn-walk" id="walkbtn" onclick="tryWalk()">Stoppen (€<span id="walkami">0</span>)</button>
-  </div>
+  <div class="ldr-strip" id="ldr-strip"></div>
 
-  <button class="ladder-fab" onclick="toggleLdr()">💰</button>
-  <div class="ladder-drawer" id="ldr">
-    <button class="ldr-close" onclick="toggleLdr()">✕</button>
-    <div class="ldr-list" id="ldr-list"></div>
+  <div class="gfoot">
+    <div class="safebadge" id="safebadge" style="visibility:hidden">🔒 Veilig: €0</div>
+    <button class="btn-walk" id="walkbtn" onclick="tryWalk()" style="display:none">Stoppen (€<span id="walkami">0</span>)</button>
+    <button id="killbtn" onclick="openKill()" style="display:none;background:rgba(220,38,38,.15);border:1px solid rgba(220,38,38,.4);color:#fca5a5;padding:6px 12px;border-radius:20px;cursor:pointer;font-size:.72rem;font-weight:700;transition:all .2s">💀 Elimineer!</button>
   </div>
 
   <!-- Confirm modal -->
@@ -376,6 +390,16 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--deep);color:va
       <button class="btn-gh" onclick="cancelWalk()">Nee, ik ga door! 🔥</button>
     </div>
   </div>
+
+  <!-- Kill modal -->
+  <div class="ov" id="m-kill" style="display:none">
+    <div class="modal">
+      <h3>💀 Elimineer iemand!</h3>
+      <p style="font-size:.82rem;color:var(--muted)">Je bent bij de laatste vraag. Wie verdient het om geëlimineerd te worden? 😈</p>
+      <div id="kill-grid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:12px 0;max-height:220px;overflow-y:auto"></div>
+      <button class="btn-gh" onclick="closeKill()">← Annuleren</button>
+    </div>
+  </div>
 </div>
 
 <!-- ═══ END ═══ -->
@@ -384,6 +408,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--deep);color:va
   <img id="end-char" class="end-char" src="" alt="">
   <div class="end-prize" id="end-prize">€0</div>
   <p class="end-msg" id="end-msg">–</p>
+  <div id="end-kill" style="display:none;margin:8px 0;padding:10px;background:rgba(220,38,38,.12);border:1px solid rgba(220,38,38,.3);border-radius:12px;font-size:.82rem;color:#fca5a5;text-align:center"></div>
   <div class="end-achs" id="end-achs"></div>
   <button class="btn-play" style="font-size:1rem;padding:15px 40px" onclick="restart()">🔄 Opnieuw</button>
   <button class="btn-outline" onclick="goLB()">🏆 Ranglijst</button>
@@ -847,31 +872,35 @@ function startGame(){
   if(selChar.name==='Chella')grantAch('chella');
   if(selChar.name==='Moek')grantAch('king_moek');
   const h=new Date().getHours();if(h<9)grantAch('gm');
+  saveProfile();
   setTimeout(()=>loadQ(),400);
 }
 
 // ══════════════════════════════════════════════════════
 //  LADDER
 // ══════════════════════════════════════════════════════
-function buildLadder(){
-  const list=document.getElementById('ldr-list');list.innerHTML='';
+function buildLadder(){updateLdr();}
+function updateLdr(){
+  // Build inline ladder strip (scroll to current)
+  const strip=document.getElementById('ldr-strip');
+  strip.innerHTML='';
   LADDER.forEach((item,i)=>{
     const d=document.createElement('div');
-    d.className='li'+(item.s?' safe':'');d.id=`li${i}`;
-    d.innerHTML=`<span class="li-n">${i+1}</span>${item.l}`;
-    list.appendChild(d);
-  });updateLdr();
-}
-function updateLdr(){
-  LADDER.forEach((_,i)=>{
-    const el=document.getElementById(`li${i}`);if(!el)return;
-    el.className='li'+(LADDER[i].s?' safe':'');
-    if(i<currentQ)el.classList.add('done');
-    if(i===currentQ)el.classList.add('cur');
+    let cls='lsi';
+    if(item.s)cls+=' safe';
+    if(i<currentQ)cls+=' done';
+    if(i===currentQ)cls+=' cur';
+    d.className=cls;
+    d.textContent=(item.s?'🔒 ':'')+item.l;
+    strip.appendChild(d);
   });
+  // Scroll current item into view
+  setTimeout(()=>{
+    const cur=strip.querySelector('.cur');
+    if(cur)cur.scrollIntoView({behavior:'smooth',inline:'center',block:'nearest'});
+  },100);
   document.getElementById('g-prize').textContent=currentQ<15?LADDER[currentQ].l:'€1.000.000';
   document.getElementById('g-qn').textContent=currentQ+1;
-  document.getElementById('g-qn2').textContent=currentQ+1;
   if(safeAmt>0){
     document.getElementById('safebadge').style.visibility='visible';
     document.getElementById('safebadge').textContent='🔒 Veilig: '+fmtM(safeAmt);
@@ -879,7 +908,6 @@ function updateLdr(){
     document.getElementById('walkami').textContent=safeAmt.toLocaleString('nl-NL');
   }
 }
-function toggleLdr(){snd('click');document.getElementById('ldr').classList.toggle('open');}
 
 // ══════════════════════════════════════════════════════
 //  TIMER
@@ -904,12 +932,11 @@ function startTimer(){
 function clearTimer(){clearInterval(timerInt);clearInterval(_flashInt);timerInt=null;_flashInt=null;}
 function updTimer(){
   const t=document.getElementById('g-tsec'),b=document.getElementById('tbar');
-  t.textContent=timerSec;
-  if(timerSec<=5){t.className='qtnum panic';}
-  else if(timerSec<=10){t.className='qtnum';t.style.color='var(--red)';}
-  else if(timerSec<=20){t.className='qtnum';t.style.color='#f97316';}
-  else{t.className='qtnum';t.style.color='var(--gold)';}
-  b.style.width=(timerSec/30*100)+'%';
+  const pct=timerSec/30*100;
+  t.textContent=timerSec+'s';
+  // Number is inside the bar — shift left of bar edge when bar is short
+  t.className='tbar-num'+(pct<25?' light':'');
+  b.style.width=pct+'%';
   b.style.transition=timerSec<=5?'width .5s linear,background .3s':'width 1s linear,background .5s';
   if(timerSec<=10)b.classList.add('urg');else b.classList.remove('urg');
 }
@@ -940,6 +967,8 @@ function loadQ(){
     btn.onclick=()=>pickAns(i);
     ans.appendChild(btn);
   });
+  // Show kill button only at last question
+  document.getElementById('killbtn').style.display=currentQ===14?'block':'none';
   updateLdr();startTimer();startTension();setEmotion('idle');
 }
 
@@ -1057,9 +1086,64 @@ function endGameWith(prize,icon,title,msg){
   document.getElementById('end-msg').innerHTML=`<strong style="color:white;font-size:1rem">${title}</strong><br>${msg}`;
   document.getElementById('end-char').src=selChar.img;
   document.getElementById('end-achs').innerHTML=sessionAchs.map(a=>`<span class="ea">${a.icon} ${a.name}</span>`).join('');
+  // Show kill result
+  const killDiv=document.getElementById('end-kill');
+  if(killedChar){
+    const killMsgs=['is officieel geëlimineerd 💀','mag de chat verlaten 🚪','is er geweest 😈','heeft het nakijken 💀','staat op de dodenlijst ☠️'];
+    const m=killMsgs[Math.floor(Math.random()*killMsgs.length)];
+    killDiv.style.display='block';
+    killDiv.innerHTML=`<img src="${killedChar.img}" style="width:44px;height:55px;object-fit:cover;object-position:top;border-radius:8px;border:2px solid #ef4444;margin:0 auto 6px;display:block"><strong style="color:#f87171">${killedChar.name}</strong> ${m}<br><small style="color:rgba(255,255,255,.4)">Genomineerd door ${playerName}</small>`;
+  }else{killDiv.style.display='none';}
   go('s-end');
 }
-function restart(){snd('click');go('s-intro');}
+function restart(){snd('click');killedChar=null;go('s-intro');}
+
+// ══════════════════════════════════════════════════════
+//  KILL FEATURE 💀
+// ══════════════════════════════════════════════════════
+let killedChar=null;
+function openKill(){
+  snd('click');
+  const grid=document.getElementById('kill-grid');
+  grid.innerHTML='';
+  CHARS.forEach(ch=>{
+    if(ch.name===selChar.name)return; // can't kill yourself
+    const d=document.createElement('div');
+    d.style.cssText='cursor:pointer;text-align:center;padding:6px 4px;border-radius:8px;border:1.5px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);transition:all .2s';
+    d.innerHTML=`<img src="${ch.img}" style="width:44px;height:55px;object-fit:cover;object-position:top;border-radius:6px;display:block;margin:0 auto 4px"><span style="font-size:.6rem;font-weight:700;color:#c8d8f0">${ch.name}</span>`;
+    d.onclick=()=>selectKill(ch);
+    d.onmouseover=()=>d.style.borderColor='var(--red)';
+    d.onmouseout=()=>d.style.borderColor='rgba(255,255,255,.1)';
+    grid.appendChild(d);
+  });
+  document.getElementById('m-kill').style.display='flex';
+}
+function closeKill(){snd('click');document.getElementById('m-kill').style.display='none';}
+function selectKill(ch){
+  snd('wrong');killedChar=ch;
+  closeKill();
+  // Show brief confirmation
+  const kb=document.getElementById('killbtn');
+  kb.textContent='💀 '+ch.name+' is doelwit!';
+  kb.style.borderColor='rgba(220,38,38,.8)';
+  kb.style.color='#f87171';
+  kb.onclick=null;
+}
+
+// ══════════════════════════════════════════════════════
+//  LOCALSTORAGE PROFILE
+// ══════════════════════════════════════════════════════
+function saveProfile(){localStorage.setItem('fm_profile',JSON.stringify({name:playerName,char:selChar?.name||''}));}
+function loadProfile(){
+  try{
+    const p=JSON.parse(localStorage.getItem('fm_profile')||'{}');
+    if(p.name){document.getElementById('name-inp').value=p.name;}
+  }catch(e){}
+}
+// Load saved name on startup
+document.addEventListener('DOMContentLoaded',loadProfile);
+// Also try immediately in case DOM is already ready
+if(document.readyState!=='loading')loadProfile();
 
 // ══════════════════════════════════════════════════════
 //  CONFETTI
