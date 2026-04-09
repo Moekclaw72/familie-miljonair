@@ -10,9 +10,11 @@
 html,body{height:100%;overflow:hidden;margin:0;padding:0}
 body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--deep);color:var(--text)}
 
-/* SCREENS — position:fixed fills exactly the visible area, ignores address bar */
-.screen{display:none;position:fixed;top:0;left:0;right:0;bottom:0;flex-direction:column;overflow:hidden}
+/* SCREENS — fixed viewport, padded below address bar */
+.screen{display:none;position:fixed;top:0;left:0;right:0;bottom:0;flex-direction:column;overflow:hidden;padding-top:env(safe-area-inset-top,0)}
 .screen.active{display:flex}
+/* Scrollable screens need overflow-y */
+#s-lb.active,#s-ach.active,#s-stats.active,#s-intro.active{overflow-y:auto}
 
 /* PARTICLES */
 #ptcl{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
@@ -64,8 +66,8 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--deep);color:va
 #s-game::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 42%,rgba(20,70,255,.22) 0%,rgba(10,40,180,.1) 35%,transparent 68%);pointer-events:none;z-index:0}
 .game-main,.ghdr,.tbar-wrap,.gfoot{position:relative;z-index:1}
 
-/* Game header — safe area for notch phones */
-.ghdr{display:flex;align-items:center;padding:8px 10px;padding-top:max(8px,env(safe-area-inset-top,8px));background:rgba(0,0,20,.7);border-bottom:1px solid rgba(60,100,255,.25);flex-shrink:0;gap:8px}
+/* Game header */
+.ghdr{display:flex;align-items:center;padding:8px 10px;background:rgba(0,0,20,.7);border-bottom:1px solid rgba(60,100,255,.25);flex-shrink:0;gap:8px}
 .plr-chip{display:flex;align-items:center;gap:7px;flex:1;min-width:0}
 .plr-img-wrap{position:relative;width:32px;flex-shrink:0}
 .plr-img{width:32px;height:40px;object-fit:cover;object-position:top;border-radius:5px;border:1.5px solid var(--gold);display:block}
