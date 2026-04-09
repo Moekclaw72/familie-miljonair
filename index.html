@@ -116,7 +116,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--deep);color:va
 @keyframes slideIn{from{transform:translateY(-14px) scale(.96);opacity:0}to{transform:translateY(0) scale(1);opacity:1}}
 
 /* 2×2 answer grid */
-.answers{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:6px;flex:1;min-height:0}
+.answers{display:grid;grid-template-columns:1fr 1fr;grid-auto-rows:1fr;gap:6px;flex:1;min-height:0}
 /* WWTBM pill-shaped answer buttons */
 .ab{background:linear-gradient(180deg,rgba(255,255,255,.07) 0%,transparent 35%),linear-gradient(135deg,rgba(18,30,115,.97),rgba(8,12,60,.97));border:1.5px solid rgba(60,100,220,.45);border-radius:12px;padding:6px 8px;cursor:pointer;display:flex;align-items:center;gap:6px;font-size:clamp(.62rem,2.2vw,.82rem);font-weight:600;color:#ddeaff;line-height:1.2;transition:all .15s;box-shadow:inset 0 1px 0 rgba(255,255,255,.09),0 3px 12px rgba(0,0,40,.6);animation:fadeUp .35s ease both;min-height:40px;position:relative;word-break:break-word;hyphens:auto}
 .ab::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.04),transparent);pointer-events:none}
