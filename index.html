@@ -1,0 +1,1209 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Familie Miljonair 🎉</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Segoe UI', sans-serif;
+  background: radial-gradient(ellipse at center, #0a1628 0%, #000510 100%);
+  min-height: 100vh;
+  color: white;
+  overflow-x: hidden;
+}
+
+/* ===== SCREENS ===== */
+.screen { display: none; min-height: 100vh; }
+.screen.active { display: flex; flex-direction: column; }
+
+/* ===== INTRO ===== */
+#screen-intro {
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  text-align: center;
+  background: radial-gradient(ellipse at center, #0d1f3c 0%, #000510 100%);
+}
+#screen-intro h1 {
+  font-size: clamp(2rem, 6vw, 4rem);
+  font-weight: 900;
+  background: linear-gradient(135deg, #f0c040, #e8952a, #f0c040);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 8px;
+  letter-spacing: 2px;
+  text-shadow: none;
+}
+#screen-intro p.subtitle {
+  color: #a0b8d8;
+  font-size: 1.1rem;
+  margin-bottom: 30px;
+}
+.intro-btn {
+  background: linear-gradient(135deg, #e8952a, #f0c040);
+  color: #000;
+  border: none;
+  padding: 16px 48px;
+  font-size: 1.3rem;
+  font-weight: 800;
+  border-radius: 50px;
+  cursor: pointer;
+  box-shadow: 0 0 30px rgba(240,192,64,0.5);
+  transition: transform 0.2s, box-shadow 0.2s;
+  letter-spacing: 1px;
+}
+.intro-btn:hover { transform: scale(1.05); box-shadow: 0 0 50px rgba(240,192,64,0.8); }
+.star-prize { font-size: 1.4rem; margin-bottom: 20px; color: #f0c040; }
+
+/* ===== CHARACTER SELECT ===== */
+#screen-chars {
+  padding: 20px;
+  align-items: center;
+}
+#screen-chars h2 {
+  font-size: 1.8rem;
+  color: #f0c040;
+  margin-bottom: 6px;
+  text-align: center;
+}
+#screen-chars p { color: #a0b8d8; margin-bottom: 20px; text-align: center; }
+.chars-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 12px;
+  width: 100%;
+  max-width: 700px;
+  overflow-y: auto;
+  max-height: 65vh;
+  padding: 4px;
+}
+.char-card {
+  background: rgba(255,255,255,0.05);
+  border: 2px solid rgba(255,255,255,0.1);
+  border-radius: 12px;
+  padding: 10px 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: center;
+}
+.char-card:hover, .char-card.selected {
+  border-color: #f0c040;
+  background: rgba(240,192,64,0.15);
+  transform: scale(1.05);
+}
+.char-card img {
+  width: 70px;
+  height: 90px;
+  object-fit: cover;
+  object-position: top;
+  border-radius: 8px;
+  display: block;
+  margin: 0 auto 6px;
+  background: rgba(255,255,255,0.1);
+}
+.char-card span {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #c8d8f0;
+  display: block;
+}
+.char-start-btn {
+  margin-top: 20px;
+  background: linear-gradient(135deg, #e8952a, #f0c040);
+  color: #000;
+  border: none;
+  padding: 14px 40px;
+  font-size: 1.1rem;
+  font-weight: 800;
+  border-radius: 50px;
+  cursor: pointer;
+  display: none;
+  box-shadow: 0 0 20px rgba(240,192,64,0.4);
+}
+.char-start-btn.visible { display: block; }
+
+/* ===== GAME SCREEN ===== */
+#screen-game {
+  flex-direction: column;
+  padding: 0;
+  position: relative;
+}
+.game-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: rgba(0,0,0,0.4);
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+.player-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.player-info img {
+  width: 45px;
+  height: 55px;
+  object-fit: cover;
+  object-position: top;
+  border-radius: 8px;
+  border: 2px solid #f0c040;
+}
+.player-name { font-size: 0.85rem; font-weight: 700; color: #f0c040; }
+.current-prize {
+  font-size: 1.1rem;
+  font-weight: 900;
+  color: #f0c040;
+  text-align: center;
+}
+.current-prize small { display: block; font-size: 0.65rem; color: #a0b8d8; font-weight: 400; }
+
+/* Lifelines */
+.lifelines {
+  display: flex;
+  gap: 8px;
+}
+.lifeline-btn {
+  background: rgba(255,255,255,0.1);
+  border: 2px solid rgba(255,255,255,0.3);
+  border-radius: 8px;
+  padding: 6px 10px;
+  cursor: pointer;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: white;
+  transition: all 0.2s;
+  text-align: center;
+  line-height: 1.2;
+}
+.lifeline-btn:hover:not(.used) { border-color: #f0c040; background: rgba(240,192,64,0.2); }
+.lifeline-btn.used { opacity: 0.3; cursor: not-allowed; text-decoration: line-through; }
+.lifeline-btn .ll-icon { font-size: 1.1rem; display: block; }
+
+/* Question area */
+.game-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 16px;
+  gap: 12px;
+}
+.question-num {
+  font-size: 0.8rem;
+  color: #a0b8d8;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+.question-box {
+  background: linear-gradient(135deg, rgba(10,40,80,0.9), rgba(5,20,50,0.9));
+  border: 2px solid rgba(100,160,255,0.3);
+  border-radius: 16px;
+  padding: 20px;
+  text-align: center;
+  font-size: clamp(0.95rem, 3vw, 1.2rem);
+  font-weight: 600;
+  line-height: 1.5;
+  max-width: 600px;
+  width: 100%;
+  min-height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 20px rgba(100,160,255,0.2);
+}
+
+/* Answer buttons */
+.answers-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  width: 100%;
+  max-width: 600px;
+}
+.answer-btn {
+  background: linear-gradient(135deg, rgba(8,30,65,0.95), rgba(4,15,40,0.95));
+  border: 2px solid rgba(100,160,255,0.4);
+  border-radius: 12px;
+  padding: 14px 12px;
+  cursor: pointer;
+  font-size: clamp(0.8rem, 2.5vw, 1rem);
+  font-weight: 600;
+  color: white;
+  text-align: left;
+  transition: all 0.2s;
+  line-height: 1.3;
+}
+.answer-btn:hover:not(.disabled) {
+  border-color: #f0c040;
+  background: linear-gradient(135deg, rgba(20,60,120,0.95), rgba(10,30,70,0.95));
+  transform: scale(1.02);
+}
+.answer-btn .opt-letter {
+  color: #f0c040;
+  font-weight: 800;
+  margin-right: 8px;
+}
+.answer-btn.selected { border-color: #f0c040; background: linear-gradient(135deg, rgba(240,140,0,0.3), rgba(180,80,0,0.3)); }
+.answer-btn.correct { border-color: #22c55e; background: linear-gradient(135deg, rgba(0,120,60,0.5), rgba(0,80,40,0.5)); }
+.answer-btn.wrong { border-color: #ef4444; background: linear-gradient(135deg, rgba(120,0,0,0.5), rgba(80,0,0,0.5)); }
+.answer-btn.hidden { opacity: 0.2; pointer-events: none; }
+.answer-btn.disabled { cursor: default; }
+
+/* Money ladder */
+.money-ladder {
+  position: fixed;
+  right: 0;
+  top: 0;
+  height: 100vh;
+  width: 110px;
+  background: rgba(0,0,0,0.7);
+  display: flex;
+  flex-direction: column-reverse;
+  justify-content: center;
+  padding: 8px 6px;
+  gap: 2px;
+  z-index: 10;
+  border-left: 1px solid rgba(255,255,255,0.1);
+  overflow: hidden;
+}
+.ladder-item {
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: #a0b8d8;
+  text-align: right;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 4px;
+}
+.ladder-item.safe { color: #f0c040; font-weight: 800; }
+.ladder-item.current {
+  background: rgba(240,192,64,0.25);
+  color: #f0c040;
+  border: 1px solid #f0c040;
+  font-weight: 800;
+}
+.ladder-item.passed { color: #22c55e; }
+.ladder-num { font-size: 0.55rem; color: rgba(255,255,255,0.3); }
+
+@media (max-width: 500px) {
+  .money-ladder { width: 80px; }
+  .ladder-item { font-size: 0.55rem; padding: 3px 4px; }
+  .answers-grid { grid-template-columns: 1fr; }
+  .game-main { padding-right: 88px; }
+}
+@media (min-width: 501px) {
+  .game-main { padding-right: 120px; }
+}
+
+/* ===== MODAL OVERLAYS ===== */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,15,0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  padding: 20px;
+}
+.modal-box {
+  background: linear-gradient(135deg, #0d1f3c, #060f20);
+  border: 2px solid rgba(240,192,64,0.5);
+  border-radius: 20px;
+  padding: 30px;
+  max-width: 400px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 0 40px rgba(240,192,64,0.3);
+}
+.modal-box h3 { font-size: 1.4rem; color: #f0c040; margin-bottom: 12px; }
+.modal-box p { color: #c0d0e8; line-height: 1.5; margin-bottom: 8px; }
+.modal-char-img {
+  width: 80px;
+  height: 100px;
+  object-fit: cover;
+  object-position: top;
+  border-radius: 10px;
+  border: 2px solid #f0c040;
+  margin: 10px auto;
+  display: block;
+}
+.modal-btn {
+  background: linear-gradient(135deg, #e8952a, #f0c040);
+  color: #000;
+  border: none;
+  padding: 12px 30px;
+  font-size: 1rem;
+  font-weight: 800;
+  border-radius: 50px;
+  cursor: pointer;
+  margin-top: 16px;
+}
+.modal-btn-outline {
+  background: transparent;
+  color: #f0c040;
+  border: 2px solid #f0c040;
+  padding: 10px 24px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  border-radius: 50px;
+  cursor: pointer;
+  margin-top: 10px;
+  display: block;
+  width: 100%;
+}
+.modal-btn-outline:hover { background: rgba(240,192,64,0.1); }
+
+/* Publiek bars */
+.pub-bars {
+  display: flex;
+  gap: 8px;
+  align-items: flex-end;
+  justify-content: center;
+  height: 80px;
+  margin: 16px 0;
+}
+.pub-bar-wrap { display: flex; flex-direction: column; align-items: center; gap: 4px; flex: 1; }
+.pub-bar {
+  width: 100%;
+  background: linear-gradient(to top, #e8952a, #f0c040);
+  border-radius: 4px 4px 0 0;
+  transition: height 1s ease;
+}
+.pub-bar-label { font-size: 0.9rem; font-weight: 800; color: #f0c040; }
+.pub-bar-pct { font-size: 0.7rem; color: #a0b8d8; }
+
+/* ===== END SCREEN ===== */
+#screen-end {
+  align-items: center;
+  justify-content: center;
+  padding: 30px;
+  text-align: center;
+}
+#screen-end h1 { font-size: 2.5rem; margin-bottom: 8px; }
+#screen-end .end-prize {
+  font-size: 3rem;
+  font-weight: 900;
+  color: #f0c040;
+  margin: 16px 0;
+  text-shadow: 0 0 20px rgba(240,192,64,0.6);
+}
+#screen-end .end-char {
+  width: 120px;
+  height: 150px;
+  object-fit: cover;
+  object-position: top;
+  border-radius: 12px;
+  border: 3px solid #f0c040;
+  margin: 12px auto;
+  display: block;
+}
+#screen-end p { color: #a0b8d8; margin-bottom: 20px; }
+.confetti-wrap { position: fixed; inset: 0; pointer-events: none; overflow: hidden; z-index: 200; }
+.confetti {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  opacity: 0;
+  animation: fall linear forwards;
+}
+@keyframes fall {
+  0% { opacity: 1; transform: translateY(-20px) rotate(0deg); }
+  100% { opacity: 0; transform: translateY(100vh) rotate(720deg); }
+}
+
+/* Timer ring */
+.timer-wrap { display: flex; align-items: center; justify-content: center; margin-bottom: 4px; }
+.timer-circle {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: conic-gradient(#f0c040 0deg, rgba(255,255,255,0.1) 0deg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: #f0c040;
+  transition: background 1s linear;
+}
+
+/* Walk away button */
+.walk-btn {
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.2);
+  color: rgba(255,255,255,0.5);
+  padding: 6px 16px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 0.75rem;
+  margin-top: 4px;
+  transition: all 0.2s;
+}
+.walk-btn:hover { border-color: #ef4444; color: #ef4444; }
+</style>
+</head>
+<body>
+
+<!-- ============ INTRO ============ -->
+<div id="screen-intro" class="screen active">
+  <div style="font-size:3rem;margin-bottom:8px;">🎉</div>
+  <h1>Familie<br>Miljonair</h1>
+  <p class="subtitle">De ultieme familiequiz!</p>
+  <div class="star-prize">💰 Wie wint de €1.000.000? 💰</div>
+  <button class="intro-btn" onclick="startCharSelect()">SPEEL NU</button>
+  <p style="margin-top:24px;color:#506080;font-size:0.8rem;">150+ vragen · 3 lifelines · 15 niveaus</p>
+</div>
+
+<!-- ============ CHARACTER SELECT ============ -->
+<div id="screen-chars" class="screen">
+  <h2>Kies je personage</h2>
+  <p>Wie ga jij zijn?</p>
+  <div class="chars-grid" id="chars-grid"></div>
+  <button class="char-start-btn" id="char-start-btn" onclick="startGame()">Spelen! 🎮</button>
+</div>
+
+<!-- ============ GAME ============ -->
+<div id="screen-game" class="screen">
+  <div class="game-top">
+    <div class="player-info">
+      <img id="game-player-img" src="" alt="">
+      <div>
+        <div class="player-name" id="game-player-name">Speler</div>
+        <div style="font-size:0.65rem;color:#a0b8d8;">Vraag <span id="q-num">1</span>/15</div>
+      </div>
+    </div>
+    <div class="current-prize">
+      <small>Te winnen</small>
+      <span id="current-prize-text">€100</span>
+    </div>
+    <div class="lifelines">
+      <button class="lifeline-btn" id="ll-5050" onclick="use5050()">
+        <span class="ll-icon">50/50</span>
+        <span>Half om half</span>
+      </button>
+      <button class="lifeline-btn" id="ll-bel" onclick="useBel()">
+        <span class="ll-icon">📞</span>
+        <span>Bel familie</span>
+      </button>
+      <button class="lifeline-btn" id="ll-pub" onclick="usePubliek()">
+        <span class="ll-icon">👥</span>
+        <span>Publiek</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="game-main">
+    <div class="timer-wrap">
+      <div class="timer-circle" id="timer-circle">30</div>
+    </div>
+    <div class="question-num">VRAAG <span id="q-num2">1</span> VAN 15</div>
+    <div class="question-box" id="question-text">Laden...</div>
+    <div class="answers-grid" id="answers-grid"></div>
+    <button class="walk-btn" id="walk-btn" onclick="walkAway()">Stoppen met €<span id="walk-amount">0</span></button>
+  </div>
+
+  <!-- Money ladder -->
+  <div class="money-ladder" id="money-ladder"></div>
+
+  <!-- Confirm modal -->
+  <div class="modal-overlay" id="modal-confirm" style="display:none">
+    <div class="modal-box">
+      <h3>Weet je het zeker?</h3>
+      <p>Je kiest voor antwoord <strong id="confirm-answer-text"></strong></p>
+      <p style="color:#a0b8d8;font-size:0.85rem;">Dit kan je lot besegelen...</p>
+      <button class="modal-btn" onclick="confirmAnswer()">Definitief antwoord!</button>
+      <button class="modal-btn-outline" onclick="cancelConfirm()">Nee, wacht...</button>
+    </div>
+  </div>
+
+  <!-- Bel modal -->
+  <div class="modal-overlay" id="modal-bel" style="display:none">
+    <div class="modal-box">
+      <h3 id="bel-name">📞 Bellen...</h3>
+      <img class="modal-char-img" id="bel-img" src="" alt="">
+      <p id="bel-msg" style="font-style:italic;font-size:1.05rem;">"..."</p>
+      <button class="modal-btn" onclick="closeBel()">Bedankt!</button>
+    </div>
+  </div>
+
+  <!-- Publiek modal -->
+  <div class="modal-overlay" id="modal-pub" style="display:none">
+    <div class="modal-box">
+      <h3>👥 Het publiek heeft gestemd!</h3>
+      <div class="pub-bars" id="pub-bars"></div>
+      <button class="modal-btn" onclick="closePub()">Begrepen!</button>
+    </div>
+  </div>
+
+  <!-- Walk away modal -->
+  <div class="modal-overlay" id="modal-walk" style="display:none">
+    <div class="modal-box">
+      <h3>Stoppen?</h3>
+      <p>Je pakt <strong id="walk-prize-text" style="color:#f0c040;font-size:1.2rem;"></strong> mee naar huis.</p>
+      <p style="color:#a0b8d8;font-size:0.85rem;">Weet je het zeker?</p>
+      <button class="modal-btn" onclick="confirmWalk()">Ja, ik neem het geld!</button>
+      <button class="modal-btn-outline" onclick="cancelWalk()">Nee, ik ga door!</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ END SCREEN ============ -->
+<div id="screen-end" class="screen">
+  <div class="confetti-wrap" id="confetti-wrap"></div>
+  <h1 id="end-title">🎉</h1>
+  <img class="end-char" id="end-char-img" src="" alt="">
+  <div class="end-prize" id="end-prize">€0</div>
+  <p id="end-msg">Goed gespeeld!</p>
+  <button class="intro-btn" onclick="restartGame()">Opnieuw spelen</button>
+</div>
+
+<script>
+// ============================================================
+// DATA
+// ============================================================
+
+const CHARACTERS = [
+  { name: 'Moek', img: 'Moek.png' },
+  { name: 'Kawita', img: 'Kawita.png' },
+  { name: 'Jennifer', img: 'Jennifer.png' },
+  { name: 'Berry', img: 'Berry.png' },
+  { name: 'Geetha', img: 'Geetha.png' },
+  { name: 'Loek', img: 'loek.png' },
+  { name: 'Roy', img: 'Roy.png' },
+  { name: 'Ervina', img: 'Ervina.png' },
+  { name: 'Armando', img: 'Armando.png' },
+  { name: 'Sindy', img: 'Sindy.png' },
+  { name: 'Chella', img: 'Chella.png' },
+  { name: 'Daan', img: 'Daan.png' },
+  { name: 'Gaby', img: 'Gaby.png' },
+  { name: 'Anisa', img: 'Anisa.png' },
+  { name: 'Shreya', img: 'Shreya.png' },
+  { name: 'Devan', img: 'Devan.png' },
+  { name: 'Shira', img: 'Shira.png' },
+  { name: 'Chloé', img: 'Chloé.png' },
+  { name: 'Amaya', img: 'Amaya.png' },
+  { name: 'Naleya', img: 'Naleya.png' },
+  { name: 'Bella', img: 'Bella.png' },
+  { name: 'Richella', img: 'Richella.png' },
+  { name: 'Stitch', img: 'Stich.png' },
+];
+
+// Funny bel responses per character
+const BEL_HINTS = {
+  'Moek':     ['Ik weet het niet, maar ga voor {correct}!', 'Hmm... ik denk {correct}, maar zeker weten doe ik niet...', 'Bro ga voor {correct}! 💯'],
+  'Kawita':   ['Kijk ik zou zeggen {correct} maar vraag het Geetha ff.', '{correct} lijkt me logisch!', 'Schatje ik denk dat het {correct} is!'],
+  'Jennifer': ['Wacht ik zoek het even op... {correct}!! 😄', 'Ik stuur je een appje zo maar ik denk {correct}.', 'Ik ga eerlijk zijn, ik weet het niet... misschien {correct}?'],
+  'Berry':    ['Ja dat is {correct}, maar wacht ik kijk Feyenoord 😄', '{correct} denk ik! Maar echt zeker? Nee.', 'Man doe gewoon {correct} en hopen dat het goed is!'],
+  'Geetha':   ['Gm! Ik denk {correct} hoor!', 'Ooh ik ben er niet 100% zeker van maar {correct}!', 'Weet je wat, ga maar voor {correct}, ik vertrouw het.'],
+  'Loek':     ['Ja ik rij net de A10 op maar ik denk {correct}!', '{correct} — en maak je niet druk, eet straks een gehaktbal!', 'Hmm lastig... {correct}? Kan ook fout zijn hoor.'],
+  'Roy':      ['Gewoon {correct} doen, niet nadenken.', 'Ik weet zeker dat het {correct} is!', 'Ga voor {correct}, ik heb er verstand van!'],
+  'Ervina':   ['Lieverd ik denk echt dat het {correct} is 💓', 'Ik twijfel maar zeg {correct}!', 'Oh wat een moeilijke vraag... {correct}?'],
+  'Armando':  ['Bro {correct}, vertrouw me!', 'Ik hef dozen opgetild de hele dag maar dit weet ik ook: {correct}!', 'Gewoon {correct} doen!'],
+  'Sindy':    ['Ik denk {correct} maar vraag Armando ook even!', '{correct}! Ben er bijna zeker van.', 'Amaya slaapt, snel: {correct}!'],
+  'Chella':   ['OMG ik heb honger maar het antwoord is {correct}!', 'EKSS {correct}!! Ja toch?!', 'Ik weet het echt niet maar... {correct}??'],
+  'Daan':     ['...{correct}.', 'Ja. {correct}.', 'Stil. {correct}.'],
+  'Gaby':     ['Ik werk in de kinderopvang dus ik weet precies: {correct}!', 'Devan zegt ook {correct} haha!', 'Ja schat, {correct}!'],
+  'Anisa':    ['Mijn nagels zijn net gedaan maar het antwoord is {correct}! 💅', 'Omg {correct}! Hoe weet ik dat 😂', 'Snel {correct} en door!'],
+  'Shreya':   ['Papa zegt altijd {correct}!', 'Ik weet het van school: {correct}!', 'Gewoon {correct} doen hoor!'],
+  'Devan':    ['Ik heb het van YouTube: {correct}!', '{correct} weet ik zeker!', 'Ja dat is {correct}!'],
+  'Shira':    ['Ik doe gewoon stoer en zeg {correct}!', '{correct}!! Vertrouw me maar.', 'Ja dat weet ik, {correct}!'],
+  'default':  ['Ik denk {correct}!', 'Ga voor {correct}!', '{correct} lijkt me goed!'],
+};
+
+const MONEY_LADDER = [
+  { val: 100, label: '€100' },
+  { val: 200, label: '€200' },
+  { val: 300, label: '€300' },
+  { val: 500, label: '€500' },
+  { val: 1000, label: '€1.000', safe: true },
+  { val: 2000, label: '€2.000' },
+  { val: 4000, label: '€4.000' },
+  { val: 8000, label: '€8.000' },
+  { val: 16000, label: '€16.000' },
+  { val: 32000, label: '€32.000', safe: true },
+  { val: 64000, label: '€64.000' },
+  { val: 125000, label: '€125.000' },
+  { val: 250000, label: '€250.000' },
+  { val: 500000, label: '€500.000' },
+  { val: 1000000, label: '€1.000.000' },
+];
+
+// ============================================================
+// QUESTION BANK  (150+ vragen, difficulty: easy/medium/hard)
+// correct = index 0-3
+// ============================================================
+const ALL_QUESTIONS = [
+  // ===== FAMILIE - MAKKELIJK =====
+  { q:'Wie stuurt elke ochtend als eerste "Gm..." in de familiechat?', o:['Geetha','Jennifer','Moek','Loek'], c:0, d:'easy', cat:'familie' },
+  { q:'Wie woont er in Bloemendaal?', o:['Roy','Loek','Daan','Berry'], c:1, d:'easy', cat:'familie' },
+  { q:'Welk beroep heeft Armando?', o:['Politieagent','Kok','Verhuizer','Chauffeur'], c:2, d:'easy', cat:'familie' },
+  { q:'Wie werkt er in een kinderdagverblijf?', o:['Kawita','Gaby','Anisa','Sindy'], c:1, d:'easy', cat:'familie' },
+  { q:'Wie doet nagels en is een "modepop"?', o:['Chella','Kawita','Anisa','Jennifer'], c:2, d:'easy', cat:'familie' },
+  { q:'Van welk voetbalteam is Berry fan?', o:['Ajax','PSV','Feyenoord','Utrecht'], c:2, d:'easy', cat:'familie' },
+  { q:'Wie is de zus van Moek?', o:['Ervina','Geetha','Jennifer','Kawita'], c:1, d:'easy', cat:'familie' },
+  { q:'Wie werkt als tandartsassistente?', o:['Kawita','Jennifer','Richella/Chella','Sindy'], c:2, d:'easy', cat:'familie' },
+  { q:'Wat is het beroep van Loek?', o:['Politieagent','Vrachtwagenchauffeur','Verhuizer','Kok'], c:1, d:'easy', cat:'familie' },
+  { q:'Wie is de beste vriendin van Jennifer?', o:['Kawita','Anisa','Gaby','Sindy'], c:2, d:'easy', cat:'familie' },
+  { q:'Wie zijn de ouders van Shreya?', o:['Roy & Ervina','Armando & Sindy','Moek & Kawita','Berry & Jennifer'], c:2, d:'easy', cat:'familie' },
+  { q:'In welke stad speelt Feyenoord?', o:['Amsterdam','Rotterdam','Den Haag','Utrecht'], c:1, d:'easy', cat:'familie' },
+  { q:'Wie is de moeder van Amaya?', o:['Anisa','Sindy','Ervina','Kawita'], c:1, d:'easy', cat:'familie' },
+  { q:'Wie heeft de familie WhatsApp-groep aangemaakt?', o:['Moek','Geetha','Jennifer (Sjenni)','Roy'], c:2, d:'easy', cat:'familie' },
+  { q:'Wie zijn de ouders van Chloé en Shira?', o:['Armando & Sindy','Roy & Ervina','Berry & Jennifer','Daan & Chella'], c:2, d:'easy', cat:'familie' },
+
+  // ===== FAMILIE - MEDIUM =====
+  { q:'Hoeveel euro verloor Geetha op Oud en Nieuw bij het "straatje" spelen?', o:['€100','€150','€250','€500'], c:2, d:'medium', cat:'familie' },
+  { q:'Wie heeft Geetha een nieuw eenpersoonsbed gegeven?', o:['Roy','Berry','Loek','Daan'], c:2, d:'medium', cat:'familie' },
+  { q:'Op welke datum is de familie WhatsApp-groep aangemaakt?', o:['07-11-2019','01-01-2020','25-12-2018','14-02-2020'], c:0, d:'medium', cat:'familie' },
+  { q:'Wat voor tattoo heeft Moek?', o:['Arm tattoo','Borst tattoo','Nek tattoo','Rug tattoo'], c:2, d:'medium', cat:'familie' },
+  { q:'Wie is de ex-vrouw van Roy?', o:['Ervina','Geetha','Kawita','Sindy'], c:1, d:'medium', cat:'familie' },
+  { q:'Wie is de stiefmoeder van Richella, Jennifer en Armando?', o:['Gaby','Kawita','Ervina','Sindy'], c:2, d:'medium', cat:'familie' },
+  { q:'Welke series keek Moek in de familiechat?', o:['Breaking Bad & Friends','How to get away with murder & Ozark','Suits & Game of Thrones','The Office & Stranger Things'], c:1, d:'medium', cat:'familie' },
+  { q:'Wie maakte oliebollen met zijn eigen recept op oud en nieuw?', o:['Roy','Berry','Loek','Daan'], c:2, d:'medium', cat:'familie' },
+  { q:'Hoe oud is Shreya?', o:['7','8','9','10'], c:2, d:'medium', cat:'familie' },
+  { q:'Hoe oud is Devan (zoon van Gaby)?', o:['9','10','11','12'], c:2, d:'medium', cat:'familie' },
+  { q:'Wie is de vader van Jennifer, Armando en Richella?', o:['Moek','Loek','Roy','Daan'], c:2, d:'medium', cat:'familie' },
+  { q:'Waarvoor ging Jennifer (Sjenni) met glad ijs naar de fysiotherapeut?', o:['Ze had haar rug bezeerd','Ze was gevallen op het ijs','Ze had spierpijn van sporten','Ze had een auto ongeluk'], c:1, d:'medium', cat:'familie' },
+  { q:'Hoe heet de dochter van Ervina?', o:['Shreya','Naleya','Anisa','Bella'], c:2, d:'medium', cat:'familie' },
+  { q:'Wat zei Geetha ze had in één nacht allemaal opgegeten?', o:['Een zak chips','Een doos bonbons','Een taart','Een pak koeken'], c:1, d:'medium', cat:'familie' },
+  { q:'Wie heeft een "beef" met Sjenni (Jennifer)?', o:['Gaby','Kawita','Sindy','Ervina'], c:1, d:'medium', cat:'familie' },
+
+  // ===== FAMILIE - MOEILIJK =====
+  { q:'Wat is de verjaardag van Chloé (dochter van Berry en Jennifer)?', o:['26-06-2017','21-04-2015','29-12-2022','04-04-2020'], c:0, d:'hard', cat:'familie' },
+  { q:'Wat is de verjaardag van Shira?', o:['26-06-2017','21-04-2015','29-12-2022','04-04-2020'], c:1, d:'hard', cat:'familie' },
+  { q:'Wat is de verjaardag van Amaya?', o:['26-06-2017','21-04-2015','29-12-2022','04-04-2020'], c:2, d:'hard', cat:'familie' },
+  { q:'Hoeveel kinderen heeft Berry?', o:['1','2','3','4'], c:1, d:'hard', cat:'familie' },
+  { q:'Welk karakter beschrijft Daan het best?', o:['Luidruchtig en grappig','Stil en sportschoolfiguur','Druk en energiek','Muzikaal en creatief'], c:1, d:'hard', cat:'familie' },
+
+  // ===== SURINAAMS/HINDOESTAANS - MAKKELIJK =====
+  { q:'Wat is de hoofdstad van Suriname?', o:['Cayenne','Paramaribo','Georgetown','Bridgetown'], c:1, d:'easy', cat:'surinaams' },
+  { q:'Wanneer werd Suriname onafhankelijk van Nederland?', o:['25-11-1975','01-01-1980','15-08-1945','04-07-1960'], c:0, d:'easy', cat:'surinaams' },
+  { q:'Wat is de officiële taal van Suriname?', o:['Sranantongo','Portugees','Nederlands','Engels'], c:2, d:'easy', cat:'surinaams' },
+  { q:'Wat is holi/phagwa?', o:['Het Surinaams nieuwjaar','Het Hindoestaans kleurenfeest','Een begrafenisritueel','Een huwelijksceremonie'], c:1, d:'easy', cat:'surinaams' },
+  { q:'Wat is Diwali?', o:['Het kleurenfeest','Het lichtjesfeest','Het oogstfeest','Het nieuwjaarsfeest'], c:1, d:'easy', cat:'surinaams' },
+  { q:'Wat is pom?', o:['Een Surinaams dessert','Een gerecht met pomtajer en kip','Een Surinaams drankje','Een soep'], c:1, d:'easy', cat:'surinaams' },
+  { q:'Wat is bara?', o:['Surinaams brood','Een gefrituurde linzensnack','Een soep','Een rijstgerecht'], c:1, d:'easy', cat:'surinaams' },
+  { q:'Wat is roti?', o:['Surinaams rijstgerecht','Hindoestaans platbrood met curry','Een Surinaamse soep','Gefrituurde banaan'], c:1, d:'easy', cat:'surinaams' },
+  { q:'Wat is baka bana?', o:['Gestoofde banaan','Rauw eten van banaan','Gebakken banaan','Banaan in saus'], c:2, d:'easy', cat:'surinaams' },
+  { q:'Wat is saoto?', o:['Een Surinaams dessert','Een Javaans-Surinaamse kippensoep','Een Hindoestaanse soep','Een rijstgerecht'], c:1, d:'easy', cat:'surinaams' },
+
+  // ===== SURINAAMS/HINDOESTAANS - MEDIUM =====
+  { q:'Hoeveel inwoners heeft Suriname (globaal)?', o:['300.000','600.000','1.200.000','2.000.000'], c:1, d:'medium', cat:'surinaams' },
+  { q:'Welk land grenst Suriname aan de westkant?', o:['Brazilië','Guyana','Frans-Guyana','Venezuela'], c:1, d:'medium', cat:'surinaams' },
+  { q:'Welk land grenst Suriname aan de oostkant?', o:['Brazilië','Guyana','Frans-Guyana','Venezuela'], c:2, d:'medium', cat:'surinaams' },
+  { q:'Aan welke zee grenst Suriname in het noorden?', o:['Caribische Zee','Atlantische Oceaan','Stille Oceaan','Middellandse Zee'], c:1, d:'medium', cat:'surinaams' },
+  { q:'Wat is de munt van Suriname?', o:['Surinaamse gulden','Surinaamse dollar','Surinaamse franc','Surinaamse peso'], c:1, d:'medium', cat:'surinaams' },
+  { q:'Wat is moksi alesi?', o:['Een Surinaams gemengd rijstgerecht','Een soort soep','Gebakken vlees','Een dessert'], c:0, d:'medium', cat:'surinaams' },
+  { q:'Wat is Parbo?', o:['Surinaamse wijn','Surinaams bier','Surinaams vruchtensap','Surinaamse limonade'], c:1, d:'medium', cat:'surinaams' },
+  { q:'Wat is sranan tongo?', o:['Een buitenlandse taal','De creoolse omgangstaal van Suriname','Een Hindoestaans dialect','Een Inheems dialect'], c:1, d:'medium', cat:'surinaams' },
+  { q:'Wat is kotomisi?', o:['Een Surinaams gerecht','Een muziekinstrument','Traditionele Surinaamse klederdracht','Een dans'], c:2, d:'medium', cat:'surinaams' },
+  { q:'Wat is puja?', o:['Een Surinaams feest','Een Hindoestaans gebed/ritueel','Een soort eten','Een dans'], c:1, d:'medium', cat:'surinaams' },
+  { q:'Wat is dal?', o:['Een Surinaamse vissoep','Een Hindoestaans linzengerecht','Een dessert','Een rijstgerecht'], c:1, d:'medium', cat:'surinaams' },
+  { q:'Wat is markoesa?', o:['Een Surinaams gerecht','Passievrucht','Een Hindoestaans ritueel','Een dans'], c:1, d:'medium', cat:'surinaams' },
+  { q:'Wat is zuurzak?', o:['Een Surinaamse groente','Een tropische vrucht (soursop)','Een Surinaams gerecht','Een dessert'], c:1, d:'medium', cat:'surinaams' },
+  { q:'Wat is een "djogo"?', o:['Een muziekinstrument','Een klein flesje Parbo bier','Een kinderspel','Een type kano'], c:1, d:'medium', cat:'surinaams' },
+  { q:'Welke rivier loopt door Paramaribo?', o:['Corantijnrivier','Surinamerivier','Amazone','Cottica'], c:1, d:'medium', cat:'surinaams' },
+
+  // ===== SURINAAMS/HINDOESTAANS - MOEILIJK =====
+  { q:'Wie was de eerste president van Suriname?', o:['Desi Bouterse','Johan Ferrier','Henck Arron','Jules Wijdenbosch'], c:1, d:'hard', cat:'surinaams' },
+  { q:'In welk jaar vonden de Surinaamse decembermoorden plaats?', o:['1980','1982','1987','1990'], c:1, d:'hard', cat:'surinaams' },
+  { q:'Wat is ketoepatee?', o:['Hindoestaans feestgerecht met vlees','Kleefrijst verpakt in palmblad','Een soort soep','Een soort dessert'], c:1, d:'hard', cat:'surinaams' },
+  { q:'Hoe heet het grote stuwmeer in Suriname?', o:['Voltairemeer','Brokopondo-meer','Marowijnemeer','Cotticameer'], c:1, d:'hard', cat:'surinaams' },
+  { q:'Wat is het Surinaamse woord voor "lekker"?', o:['Tjopu','Bakra','Swietie','Nanga'], c:2, d:'hard', cat:'surinaams' },
+  { q:'Wat is kasaba?', o:['Een soort vis','Cassave/tapioca','Een Surinaams feest','Een Hindoestaans ritueel'], c:1, d:'hard', cat:'surinaams' },
+  { q:'Wat is moksi meti?', o:['Gemengd vlees','Gemengde rijst','Gemengde groenten','Gemengde vis'], c:0, d:'hard', cat:'surinaams' },
+  { q:'Welke Surinaamse kunstenaar staat bekend om Kaseko-muziek?', o:['Lobi Da Basi','Lieve Hugo','Max Nijman','Carlo Jones'], c:3, d:'hard', cat:'surinaams' },
+  { q:'Wat is telo?', o:['Surinaams dessert','Gestoofde cassave','Gefrituurd gebakken bakbanaan','Hindoestaans brood'], c:2, d:'hard', cat:'surinaams' },
+  { q:'In welk jaar werd Paramaribo op de UNESCO Werelderfgoedlijst gezet?', o:['1990','1998','2002','2010'], c:2, d:'hard', cat:'surinaams' },
+
+  // ===== ALGEMENE KENNIS - MAKKELIJK =====
+  { q:'Wat is de hoofdstad van Nederland?', o:['Rotterdam','Den Haag','Amsterdam','Utrecht'], c:2, d:'easy', cat:'algemeen' },
+  { q:'Hoeveel poten heeft een spin?', o:['6','7','8','10'], c:2, d:'easy', cat:'algemeen' },
+  { q:'Wie schilderde de Mona Lisa?', o:['Michelangelo','Leonardo da Vinci','Rembrandt','Van Gogh'], c:1, d:'easy', cat:'algemeen' },
+  { q:'Wat is de grootste planeet in ons zonnestelsel?', o:['Saturnus','Uranus','Jupiter','Neptunus'], c:2, d:'easy', cat:'algemeen' },
+  { q:'In welk land staat de Eiffeltoren?', o:['Italië','Spanje','Duitsland','Frankrijk'], c:3, d:'easy', cat:'algemeen' },
+  { q:'Hoeveel maanden heeft een jaar?', o:['10','11','12','13'], c:2, d:'easy', cat:'algemeen' },
+  { q:'Hoe heet het bekendste schilderij in het Rijksmuseum?', o:['De Nachtwacht','Meisje met de Parel','De Melkmeid','Zonnebloemen'], c:0, d:'easy', cat:'algemeen' },
+  { q:'Wie is de uitvinder van de gloeilamp?', o:['Nikola Tesla','Albert Einstein','Thomas Edison','James Watt'], c:2, d:'easy', cat:'algemeen' },
+  { q:'Wat is water in vaste vorm?', o:['Stoom','Damp','IJs','Gas'], c:2, d:'easy', cat:'algemeen' },
+  { q:'Wat is de hoofdstad van Spanje?', o:['Barcelona','Sevilla','Valencia','Madrid'], c:3, d:'easy', cat:'algemeen' },
+  { q:'Hoeveel dagen heeft een schrikkeljaar?', o:['364','365','366','367'], c:2, d:'easy', cat:'algemeen' },
+  { q:'Welke kleur krijg je als je rood en blauw mengt?', o:['Groen','Oranje','Paars','Bruin'], c:2, d:'easy', cat:'algemeen' },
+  { q:'Wat is de hoofdstad van Duitsland?', o:['München','Hamburg','Berlijn','Frankfurt'], c:2, d:'easy', cat:'algemeen' },
+  { q:'Hoe heet Mickey Mouse\'s hond?', o:['Goofy','Pluto','Rex','Buddy'], c:1, d:'easy', cat:'algemeen' },
+  { q:'Hoeveel letters heeft het alfabet?', o:['24','25','26','27'], c:2, d:'easy', cat:'algemeen' },
+  { q:'Welk dier is het symbool van Nederland?', o:['Beer','Adelaar','Leeuw','Stier'], c:2, d:'easy', cat:'algemeen' },
+  { q:'Hoeveel zijden heeft een zeshoek?', o:['4','5','6','8'], c:2, d:'easy', cat:'algemeen' },
+  { q:'Wat is de hoofdstad van Italië?', o:['Milaan','Florence','Venetië','Rome'], c:3, d:'easy', cat:'algemeen' },
+  { q:'Welk orgaan pompt bloed door het lichaam?', o:['Longen','Nieren','Hart','Lever'], c:2, d:'easy', cat:'algemeen' },
+  { q:'Wat is het hardste materiaal op aarde?', o:['Ijzer','Goud','Diamant','Titanium'], c:2, d:'easy', cat:'algemeen' },
+
+  // ===== ALGEMENE KENNIS - MEDIUM =====
+  { q:'Wie speelde Iron Man in de Marvel films?', o:['Chris Evans','Robert Downey Jr.','Chris Hemsworth','Mark Ruffalo'], c:1, d:'medium', cat:'algemeen' },
+  { q:'In welk jaar viel de Berlijnse Muur?', o:['1985','1987','1989','1991'], c:2, d:'medium', cat:'algemeen' },
+  { q:'Hoeveel continenten zijn er?', o:['5','6','7','8'], c:2, d:'medium', cat:'algemeen' },
+  { q:'Wie schreef Romeo en Julia?', o:['Charles Dickens','William Shakespeare','Jane Austen','Victor Hugo'], c:1, d:'medium', cat:'algemeen' },
+  { q:'Welke planeet staat het dichtst bij de zon?', o:['Venus','Mars','Mercurius','Aarde'], c:2, d:'medium', cat:'algemeen' },
+  { q:'Wat is de hoofdstad van Australië?', o:['Sydney','Melbourne','Brisbane','Canberra'], c:3, d:'medium', cat:'algemeen' },
+  { q:'Wie heeft de wet van zwaartekracht ontdekt?', o:['Albert Einstein','Isaac Newton','Galileo Galilei','Nikola Tesla'], c:1, d:'medium', cat:'algemeen' },
+  { q:'Wat is de hoofdstad van Japan?', o:['Osaka','Kyoto','Tokio','Hiroshima'], c:2, d:'medium', cat:'algemeen' },
+  { q:'Wie schilderde De Sterrennacht?', o:['Picasso','Rembrandt','Monet','Van Gogh'], c:3, d:'medium', cat:'algemeen' },
+  { q:'In welk jaar begon de Tweede Wereldoorlog?', o:['1936','1938','1939','1940'], c:2, d:'medium', cat:'algemeen' },
+  { q:'Wie was de eerste mens op de maan?', o:['Buzz Aldrin','Yuri Gagarin','Neil Armstrong','Michael Collins'], c:2, d:'medium', cat:'algemeen' },
+  { q:'Wat is de hoofdstad van Brazilië?', o:['São Paulo','Rio de Janeiro','Brasília','Salvador'], c:2, d:'medium', cat:'algemeen' },
+  { q:'Welk element heeft het chemisch symbool Au?', o:['Zilver','Platina','Goud','Koper'], c:2, d:'medium', cat:'algemeen' },
+  { q:'Welk land won het WK voetbal 2022?', o:['Brazilië','Frankrijk','Argentinië','Kroatië'], c:2, d:'medium', cat:'algemeen' },
+  { q:'Wie won de Ballon d\'Or 2023?', o:['Kylian Mbappé','Erling Haaland','Lionel Messi','Vinicius Jr.'], c:2, d:'medium', cat:'algemeen' },
+  { q:'In welk jaar werd de iPhone uitgebracht?', o:['2005','2006','2007','2008'], c:2, d:'medium', cat:'algemeen' },
+  { q:'Welk land won Euro 2024 voetbal?', o:['Italië','Engeland','Spanje','Duitsland'], c:2, d:'medium', cat:'algemeen' },
+  { q:'Wie zong "Thriller"?', o:['Prince','Michael Jackson','James Brown','Whitney Houston'], c:1, d:'medium', cat:'algemeen' },
+  { q:'In welk jaar werd WhatsApp opgericht?', o:['2007','2009','2011','2013'], c:1, d:'medium', cat:'algemeen' },
+  { q:'Wat is de hoofdstad van Canada?', o:['Toronto','Vancouver','Montreal','Ottawa'], c:3, d:'medium', cat:'algemeen' },
+
+  // ===== ALGEMENE KENNIS - MOEILIJK =====
+  { q:'Wat is de wetenschappelijke naam van de mens?', o:['Homo erectus','Homo heidelbergensis','Homo sapiens','Homo neanderthalensis'], c:2, d:'hard', cat:'algemeen' },
+  { q:'Hoeveel botten heeft een volwassen mens?', o:['178','196','206','216'], c:2, d:'hard', cat:'algemeen' },
+  { q:'Wat is de snelheid van het licht (afgerond)?', o:['100.000 km/s','200.000 km/s','300.000 km/s','500.000 km/s'], c:2, d:'hard', cat:'algemeen' },
+  { q:'Wie schreef het boek "1984"?', o:['Aldous Huxley','Ernest Hemingway','George Orwell','Franz Kafka'], c:2, d:'hard', cat:'algemeen' },
+  { q:'Wat is de dichtstbijzijnde ster na de zon?', o:['Sirius','Proxima Centauri','Betelgeuse','Vega'], c:1, d:'hard', cat:'algemeen' },
+  { q:'In welk jaar werd de Eiffeltoren gebouwd?', o:['1876','1889','1895','1901'], c:1, d:'hard', cat:'algemeen' },
+  { q:'Wie ontwierp het plafond van de Sixtijnse Kapel?', o:['Leonardo da Vinci','Raphael','Michelangelo','Botticelli'], c:2, d:'hard', cat:'algemeen' },
+  { q:'In welk land staat de Sagrada Família?', o:['Italië','Portugal','Spanje','Mexico'], c:2, d:'hard', cat:'algemeen' },
+  { q:'Wie speelde Nelson Mandela in de film "Invictus"?', o:['Denzel Washington','Morgan Freeman','Will Smith','Idris Elba'], c:1, d:'hard', cat:'algemeen' },
+  { q:'Wat is de naam van de grootste oceaan?', o:['Atlantische Oceaan','Arctische Oceaan','Indische Oceaan','Stille Oceaan'], c:3, d:'hard', cat:'algemeen' },
+  { q:'Welk land heeft de langste kustlijn ter wereld?', o:['Australië','Rusland','Canada','Amerika'], c:2, d:'hard', cat:'algemeen' },
+  { q:'In welk jaar werd Obama voor het eerst president van Amerika?', o:['2004','2006','2008','2010'], c:2, d:'hard', cat:'algemeen' },
+  { q:'Hoe heet het bekende bos in het midden van Suriname?', o:['Amazonewoud','Centraal Suriname Reservaat','Groene Longwoud','Moengo-woud'], c:1, d:'hard', cat:'surinaams' },
+  { q:'Welke artiest heeft de meeste Grammy Awards gewonnen ooit?', o:['Michael Jackson','Madonna','Beyoncé','Taylor Swift'], c:2, d:'hard', cat:'algemeen' },
+  { q:'Wat is de naam van de wet die zegt dat energie niet verloren gaat?', o:['Wet van Newton','Wet van behoud van energie','Wet van Ohm','Wet van Faraday'], c:1, d:'hard', cat:'algemeen' },
+];
+
+// ============================================================
+// GAME STATE
+// ============================================================
+let selectedChar = null;
+let gameQuestions = [];
+let currentQ = 0;
+let selectedAnswer = -1;
+let lifelines = { '5050': false, 'bel': false, 'pub': false };
+let timerInterval = null;
+let timerSec = 30;
+let safeAmount = 0;
+
+const OPTS = ['A','B','C','D'];
+
+// ============================================================
+// HELPERS
+// ============================================================
+function shuffle(arr) {
+  for (let i = arr.length-1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i+1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+function pickQuestions() {
+  const easy   = shuffle(ALL_QUESTIONS.filter(q => q.d === 'easy'));
+  const medium = shuffle(ALL_QUESTIONS.filter(q => q.d === 'medium'));
+  const hard   = shuffle(ALL_QUESTIONS.filter(q => q.d === 'hard'));
+  return [...easy.slice(0,5), ...medium.slice(0,5), ...hard.slice(0,5)];
+}
+
+function fmtMoney(val) {
+  return '€' + val.toLocaleString('nl-NL');
+}
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+// ============================================================
+// INTRO → CHAR SELECT
+// ============================================================
+function startCharSelect() {
+  const grid = document.getElementById('chars-grid');
+  grid.innerHTML = '';
+  CHARACTERS.forEach((ch, i) => {
+    const card = document.createElement('div');
+    card.className = 'char-card';
+    card.innerHTML = `<img src="${ch.img}" alt="${ch.name}" onerror="this.style.background='rgba(255,255,255,0.15)';this.removeAttribute('src')"><span>${ch.name}</span>`;
+    card.onclick = () => selectChar(i, card);
+    grid.appendChild(card);
+  });
+  showScreen('screen-chars');
+}
+
+function selectChar(idx, card) {
+  document.querySelectorAll('.char-card').forEach(c => c.classList.remove('selected'));
+  card.classList.add('selected');
+  selectedChar = CHARACTERS[idx];
+  const btn = document.getElementById('char-start-btn');
+  btn.classList.add('visible');
+  btn.textContent = `Spelen als ${selectedChar.name}! 🎮`;
+}
+
+// ============================================================
+// START GAME
+// ============================================================
+function startGame() {
+  if (!selectedChar) return;
+  gameQuestions = pickQuestions();
+  currentQ = 0;
+  lifelines = { '5050': false, 'bel': false, 'pub': false };
+  safeAmount = 0;
+
+  document.getElementById('game-player-img').src = selectedChar.img;
+  document.getElementById('game-player-name').textContent = selectedChar.name;
+
+  buildLadder();
+  showScreen('screen-game');
+  loadQuestion();
+}
+
+// ============================================================
+// LADDER
+// ============================================================
+function buildLadder() {
+  const ladder = document.getElementById('money-ladder');
+  ladder.innerHTML = '';
+  MONEY_LADDER.forEach((item, i) => {
+    const div = document.createElement('div');
+    div.className = 'ladder-item' + (item.safe ? ' safe' : '');
+    div.id = `ladder-${i}`;
+    div.innerHTML = `<span class="ladder-num">${i+1}</span>${item.label}`;
+    ladder.appendChild(div);
+  });
+  updateLadder();
+}
+
+function updateLadder() {
+  MONEY_LADDER.forEach((item, i) => {
+    const el = document.getElementById(`ladder-${i}`);
+    if (!el) return;
+    el.className = 'ladder-item';
+    if (item.safe) el.classList.add('safe');
+    if (i < currentQ) el.classList.add('passed');
+    if (i === currentQ) el.classList.add('current');
+  });
+  const prizeText = currentQ < MONEY_LADDER.length ? MONEY_LADDER[currentQ].label : '€1.000.000';
+  document.getElementById('current-prize-text').textContent = prizeText;
+  const walkEl = document.getElementById('walk-amount');
+  if (walkEl) walkEl.textContent = safeAmount.toLocaleString('nl-NL');
+}
+
+// ============================================================
+// LOAD QUESTION
+// ============================================================
+function loadQuestion() {
+  if (currentQ >= 15) { endGame(true); return; }
+  clearTimer();
+  selectedAnswer = -1;
+
+  const qData = gameQuestions[currentQ];
+  document.getElementById('q-num').textContent = currentQ + 1;
+  document.getElementById('q-num2').textContent = currentQ + 1;
+  document.getElementById('question-text').textContent = qData.q;
+
+  const grid = document.getElementById('answers-grid');
+  grid.innerHTML = '';
+  qData.o.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'answer-btn';
+    btn.id = `ans-${i}`;
+    btn.innerHTML = `<span class="opt-letter">${OPTS[i]}:</span>${opt}`;
+    btn.onclick = () => selectAnswer(i, btn);
+    grid.appendChild(btn);
+  });
+
+  updateLadder();
+  startTimer();
+
+  // Walk button
+  const walkBtn = document.getElementById('walk-btn');
+  if (safeAmount > 0) {
+    walkBtn.style.display = 'block';
+    document.getElementById('walk-amount').textContent = safeAmount.toLocaleString('nl-NL');
+  } else {
+    walkBtn.style.display = 'none';
+  }
+}
+
+// ============================================================
+// TIMER
+// ============================================================
+function startTimer() {
+  timerSec = 30;
+  updateTimerUI();
+  timerInterval = setInterval(() => {
+    timerSec--;
+    updateTimerUI();
+    if (timerSec <= 0) {
+      clearTimer();
+      // Time out — treat as wrong
+      const qData = gameQuestions[currentQ];
+      revealAnswer(qData.c, -1);
+      setTimeout(() => endGame(false), 2500);
+    }
+  }, 1000);
+}
+
+function clearTimer() {
+  if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
+}
+
+function updateTimerUI() {
+  const el = document.getElementById('timer-circle');
+  if (!el) return;
+  el.textContent = timerSec;
+  const pct = timerSec / 30;
+  const deg = pct * 360;
+  const color = timerSec <= 10 ? '#ef4444' : timerSec <= 20 ? '#f97316' : '#f0c040';
+  el.style.background = `conic-gradient(${color} ${deg}deg, rgba(255,255,255,0.1) ${deg}deg)`;
+  el.style.color = color;
+}
+
+// ============================================================
+// ANSWER SELECTION
+// ============================================================
+function selectAnswer(idx, btn) {
+  if (document.getElementById('modal-confirm').style.display !== 'none') return;
+  document.querySelectorAll('.answer-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  selectedAnswer = idx;
+
+  const qData = gameQuestions[currentQ];
+  document.getElementById('confirm-answer-text').textContent =
+    `${OPTS[idx]}: ${qData.o[idx]}`;
+  document.getElementById('modal-confirm').style.display = 'flex';
+}
+
+function cancelConfirm() {
+  document.getElementById('modal-confirm').style.display = 'none';
+  document.querySelectorAll('.answer-btn').forEach(b => b.classList.remove('selected'));
+  selectedAnswer = -1;
+}
+
+function confirmAnswer() {
+  document.getElementById('modal-confirm').style.display = 'none';
+  clearTimer();
+  const qData = gameQuestions[currentQ];
+  revealAnswer(qData.c, selectedAnswer);
+
+  if (selectedAnswer === qData.c) {
+    // Update safe amount
+    if (currentQ + 1 === 5 || currentQ + 1 === 10) {
+      safeAmount = MONEY_LADDER[currentQ].val;
+    }
+    currentQ++;
+    if (currentQ >= 15) {
+      setTimeout(() => endGame(true), 2000);
+    } else {
+      setTimeout(() => loadQuestion(), 2200);
+    }
+  } else {
+    setTimeout(() => endGame(false), 2500);
+  }
+}
+
+function revealAnswer(correct, chosen) {
+  document.querySelectorAll('.answer-btn').forEach((btn, i) => {
+    btn.classList.add('disabled');
+    btn.classList.remove('selected');
+    if (i === correct) btn.classList.add('correct');
+    else if (i === chosen && i !== correct) btn.classList.add('wrong');
+  });
+}
+
+// ============================================================
+// WALK AWAY
+// ============================================================
+function walkAway() {
+  if (safeAmount <= 0) return;
+  document.getElementById('walk-prize-text').textContent = fmtMoney(safeAmount);
+  document.getElementById('modal-walk').style.display = 'flex';
+}
+
+function confirmWalk() {
+  document.getElementById('modal-walk').style.display = 'none';
+  clearTimer();
+  showEnd(safeAmount, '🎒 Je loopt weg met...', `Goed gespeeld, ${selectedChar.name}! Je wist wanneer je moest stoppen.`);
+}
+
+function cancelWalk() {
+  document.getElementById('modal-walk').style.display = 'none';
+}
+
+// ============================================================
+// LIFELINES
+// ============================================================
+function use5050() {
+  if (lifelines['5050']) return;
+  lifelines['5050'] = true;
+  document.getElementById('ll-5050').classList.add('used');
+
+  const qData = gameQuestions[currentQ];
+  const correct = qData.c;
+  const wrongs = [0,1,2,3].filter(i => i !== correct);
+  shuffle(wrongs);
+  const toHide = wrongs.slice(0, 2);
+  toHide.forEach(i => {
+    const btn = document.getElementById(`ans-${i}`);
+    if (btn) btn.classList.add('hidden');
+  });
+}
+
+function useBel() {
+  if (lifelines['bel']) return;
+  lifelines['bel'] = true;
+  document.getElementById('ll-bel').classList.add('used');
+
+  const qData = gameQuestions[currentQ];
+  const correct = qData.c;
+  const correctText = qData.o[correct];
+
+  // Pick a random family member (not the player)
+  const others = CHARACTERS.filter(c => c.name !== selectedChar.name);
+  const caller = others[Math.floor(Math.random() * others.length)];
+
+  // 80% chance they say correct, 20% wrong
+  let answerToSay = correctText;
+  if (Math.random() < 0.2) {
+    const wrongs = qData.o.filter((_, i) => i !== correct);
+    answerToSay = wrongs[Math.floor(Math.random() * wrongs.length)];
+  }
+
+  const hints = BEL_HINTS[caller.name] || BEL_HINTS['default'];
+  const template = hints[Math.floor(Math.random() * hints.length)];
+  const msg = template.replace('{correct}', `"${answerToSay}"`);
+
+  document.getElementById('bel-name').textContent = `📞 ${caller.name} zegt...`;
+  document.getElementById('bel-img').src = caller.img;
+  document.getElementById('bel-msg').textContent = msg;
+  document.getElementById('modal-bel').style.display = 'flex';
+}
+
+function closeBel() {
+  document.getElementById('modal-bel').style.display = 'none';
+}
+
+function usePubliek() {
+  if (lifelines['pub']) return;
+  lifelines['pub'] = true;
+  document.getElementById('ll-pub').classList.add('used');
+
+  const qData = gameQuestions[currentQ];
+  const correct = qData.c;
+
+  // Generate audience votes: correct gets 50-80%, rest split
+  const correctPct = 50 + Math.floor(Math.random() * 31);
+  const remaining = 100 - correctPct;
+  let others = [0,1,2,3].filter(i => i !== correct);
+  let pcts = [0,0,0,0];
+  pcts[correct] = correctPct;
+
+  // Split remaining among wrong answers
+  let leftover = remaining;
+  others.forEach((idx, i) => {
+    if (i === others.length - 1) {
+      pcts[idx] = leftover;
+    } else {
+      const p = Math.floor(Math.random() * (leftover / (others.length - i)));
+      pcts[idx] = p;
+      leftover -= p;
+    }
+  });
+
+  const barsEl = document.getElementById('pub-bars');
+  barsEl.innerHTML = '';
+  const maxPct = Math.max(...pcts);
+
+  OPTS.forEach((letter, i) => {
+    const wrap = document.createElement('div');
+    wrap.className = 'pub-bar-wrap';
+    wrap.innerHTML = `
+      <div class="pub-bar" style="height:0px" data-h="${(pcts[i]/maxPct)*70}"></div>
+      <div class="pub-bar-label">${letter}</div>
+      <div class="pub-bar-pct">${pcts[i]}%</div>
+    `;
+    barsEl.appendChild(wrap);
+  });
+
+  document.getElementById('modal-pub').style.display = 'flex';
+
+  // Animate bars
+  setTimeout(() => {
+    barsEl.querySelectorAll('.pub-bar').forEach(bar => {
+      bar.style.height = bar.dataset.h + 'px';
+    });
+  }, 100);
+}
+
+function closePub() {
+  document.getElementById('modal-pub').style.display = 'none';
+}
+
+// ============================================================
+// END GAME
+// ============================================================
+function endGame(won) {
+  if (won) {
+    showEnd(1000000, '🏆 MILJONAIR! 🏆', `${selectedChar.name} heeft het gedaan! De familie is trots!`);
+  } else {
+    const prize = safeAmount;
+    const title = prize > 0 ? '😢 Helaas...' : '😢 Helaas...';
+    const msg = prize > 0
+      ? `Je gaat naar huis met ${fmtMoney(prize)} (veilig bedrag). Beter dan niets!`
+      : `Je gaat helaas met €0 naar huis. Maar je hebt geprobeerd!`;
+    showEnd(prize, title, msg);
+  }
+}
+
+function showEnd(prize, title, msg) {
+  document.getElementById('end-title').textContent = title;
+  document.getElementById('end-prize').textContent = fmtMoney(prize);
+  document.getElementById('end-msg').textContent = msg;
+  document.getElementById('end-char-img').src = selectedChar ? selectedChar.img : '';
+  showScreen('screen-end');
+
+  if (prize >= 32000) {
+    launchConfetti();
+  }
+}
+
+function launchConfetti() {
+  const wrap = document.getElementById('confetti-wrap');
+  wrap.innerHTML = '';
+  const colors = ['#f0c040','#e8952a','#22c55e','#3b82f6','#ec4899','#a855f7'];
+  for (let i = 0; i < 80; i++) {
+    const el = document.createElement('div');
+    el.className = 'confetti';
+    el.style.cssText = `
+      left: ${Math.random()*100}%;
+      background: ${colors[Math.floor(Math.random()*colors.length)]};
+      width: ${6+Math.random()*8}px;
+      height: ${6+Math.random()*8}px;
+      border-radius: ${Math.random() > 0.5 ? '50%' : '0'};
+      animation-delay: ${Math.random()*2}s;
+      animation-duration: ${2+Math.random()*3}s;
+    `;
+    wrap.appendChild(el);
+  }
+}
+
+function restartGame() {
+  clearTimer();
+  document.getElementById('confetti-wrap').innerHTML = '';
+  showScreen('screen-intro');
+}
+</script>
+</body>
+</html>
