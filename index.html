@@ -613,13 +613,58 @@ function processToast(){
 // ══════════════════════════════════════════════════════
 //  LEADERBOARD
 // ══════════════════════════════════════════════════════
+// ⬇️ VUL HIER JE FIREBASE DATABASE URL IN ⬇️
+const FB_URL=''; // bijv: 'https://familie-miljonair-xxxxx-default-rtdb.europe-west1.firebasedatabase.app'
+
+// Online leaderboard (Firebase Realtime Database REST API)
+async function loadLBOnline(){
+  if(!FB_URL)return [];
+  try{
+    const r=await fetch(FB_URL+'/scores.json');
+    const d=await r.json();
+    if(!d)return [];
+    return Object.values(d).sort((a,b)=>b.prize-a.prize).slice(0,10);
+  }catch(e){return [];}
+}
+async function saveLBOnline(name,img,prize){
+  if(!FB_URL)return;
+  try{
+    const key=name.replace(/[.#$[\]]/g,'_');
+    const old=await fetch(FB_URL+'/scores/'+encodeURIComponent(key)+'.json').then(r=>r.json());
+    // Alleen opslaan als dit beter is dan hun vorige score
+    if(old && old.prize>=prize)return;
+    await fetch(FB_URL+'/scores/'+encodeURIComponent(key)+'.json',{
+      method:'PUT',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({name,img,prize,date:new Date().toLocaleDateString('nl-NL'),ts:Date.now()})
+    });
+  }catch(e){console.log('Online save failed, offline OK');}
+}
+
+// Gecombineerde LB: online + lokaal als fallback
+let _lbCache=null,_lbCacheTime=0;
 function loadLB(){return JSON.parse(localStorage.getItem('fm_lb')||'[]');}
+async function loadLBCombined(){
+  const now=Date.now();
+  // Cache 15 seconden om niet te veel requests te doen
+  if(_lbCache && now-_lbCacheTime<15000)return _lbCache;
+  const online=await loadLBOnline();
+  const local=loadLB();
+  // Merge: online als er data is, anders lokaal
+  const merged=online.length?online:local;
+  _lbCache=merged;_lbCacheTime=now;
+  return merged;
+}
+
 function saveLB(name,img,prize){
+  // Altijd lokaal opslaan
   const lb=loadLB();
   lb.push({name,img,prize,date:new Date().toLocaleDateString('nl-NL')});
-  lb.sort((a,b)=>b.prize-a.prize);lb.splice(5);
+  lb.sort((a,b)=>b.prize-a.prize);lb.splice(10);
   localStorage.setItem('fm_lb',JSON.stringify(lb));
   if(lb[0]&&lb[0].name===name&&lb[0].prize===prize)grantAch('king');
+  // Ook online opslaan
+  saveLBOnline(name,img,prize);
 }
 
 // ══════════════════════════════════════════════════════
@@ -748,8 +793,8 @@ function hideChatFlits(){clearTimeout(_flitsTimer);document.getElementById('chat
 // ══════════════════════════════════════════════════════
 //  MINI LEADERBOARD IN GAME
 // ══════════════════════════════════════════════════════
-function showMiniLB(){
-  const lb=loadLB();
+async function showMiniLB(){
+  const lb=await loadLBCombined();
   const ranks=['👑','🥈','🥉','4️⃣','5️⃣'];
   const list=document.getElementById('mlb-list');
   if(!lb.length){
@@ -1142,14 +1187,15 @@ function goChars(){
   playerName=document.getElementById('name-inp').value.trim()||'Anoniem';
   buildChars();go('s-chars');
 }
-function goLB(){
+async function goLB(){
   snd('click');
-  const lb=loadLB();
   const list=document.getElementById('lb-list');
-  const ranks=['👑','🥈','🥉','4️⃣','5️⃣'];
-  if(!lb.length){list.innerHTML='<div class="lb-empty">Nog geen spelers.<br>Wie wordt de King of Queen? 👑<br><br>Veel succes! 💪</div>';}
-  else{list.innerHTML=lb.map((e,i)=>`<div class="lbc"><div class="lbc-rank">${ranks[i]||i+1}</div><img src="${esc(e.img)}" onerror="this.style.display='none'" alt=""><div class="lbc-info"><div class="lbc-name">${i===0?'<b>👑 King/Queen '+esc(e.name)+'</b>':esc(e.name)}</div><div class="lbc-sub">${esc(e.date)}</div></div><div class="lbc-score">${fmtM(e.prize)}<small>${i===0?'KING/QUEEN':'#'+(i+1)}</small></div></div>`).join('');}
+  const ranks=['👑','🥈','🥉','4️⃣','5️⃣','6️⃣','7️⃣','8️⃣','9️⃣','🔟'];
+  list.innerHTML='<div class="lb-empty">⏳ Laden...</div>';
   go('s-lb');
+  const lb=await loadLBCombined();
+  if(!lb.length){list.innerHTML='<div class="lb-empty">Nog geen spelers.<br>Wie wordt de King of Queen? 👑<br><br>Veel succes! 💪</div>';}
+  else{list.innerHTML=(FB_URL?'<div style="text-align:center;font-size:.6rem;color:var(--muted);padding:4px;margin-bottom:6px">🌐 Gedeelde online ranglijst</div>':'')+lb.map((e,i)=>`<div class="lbc"><div class="lbc-rank">${ranks[i]||i+1}</div><img src="${esc(e.img)}" onerror="this.style.display='none'" alt=""><div class="lbc-info"><div class="lbc-name">${i===0?'<b>👑 King/Queen '+esc(e.name)+'</b>':esc(e.name)}</div><div class="lbc-sub">${esc(e.date)}</div></div><div class="lbc-score">${fmtM(e.prize)}<small>${i===0?'KING/QUEEN':'#'+(i+1)}</small></div></div>`).join('');}
 }
 function goAch(){
   snd('click');
