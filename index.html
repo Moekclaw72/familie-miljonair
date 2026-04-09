@@ -2,16 +2,16 @@
 <html lang="nl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>Family Miljonairs 👑</title>
 <style>
 :root{--gold:#f0c040;--gold2:#e8952a;--deep:#030a18;--mid:#071428;--card:#0a1e3a;--hover:#0e2a50;--green:#22c55e;--red:#ef4444;--text:#e8f0ff;--muted:#7090b8}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html,body{height:100%;overflow:hidden}
-body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--deep);color:var(--text);height:100dvh}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--deep);color:var(--text);height:var(--vh,100svh)}
 
-/* SCREENS */
-.screen{display:none;height:100dvh;flex-direction:column;overflow:hidden}
+/* SCREENS — use smallest viewport so address bar never covers content */
+.screen{display:none;height:var(--vh,100svh);flex-direction:column;overflow:hidden}
 .screen.active{display:flex}
 
 /* PARTICLES */
@@ -97,11 +97,11 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--deep);color:va
 .tbar-num{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:.85rem;font-weight:900;color:#fff;z-index:2;pointer-events:none;text-shadow:0 1px 6px rgba(0,0,0,.9),0 0 12px rgba(0,0,0,.5)}
 
 /* ── MAIN 3-COLUMN GAME LAYOUT ── */
-.game-main{flex:1;display:flex;overflow:hidden;padding:6px;gap:5px}
+.game-main{flex:1;display:flex;overflow:hidden;padding:4px;gap:4px;min-height:0}
 
 /* LEFT: Lifelines */
-.ll-col{display:flex;flex-direction:column;justify-content:center;align-items:center;gap:10px;width:54px;flex-shrink:0}
-.ll{width:50px;height:50px;border-radius:50%;background:radial-gradient(circle at 40% 35%,rgba(40,70,200,.9),rgba(10,20,80,.95));border:2px solid rgba(80,130,255,.55);color:white;font-size:1.25rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;box-shadow:0 0 14px rgba(60,100,255,.3),inset 0 1px 0 rgba(255,255,255,.15);position:relative;flex-shrink:0}
+.ll-col{display:flex;flex-direction:column;justify-content:center;align-items:center;gap:8px;width:50px;flex-shrink:0}
+.ll{width:46px;height:46px;border-radius:50%;background:radial-gradient(circle at 40% 35%,rgba(40,70,200,.9),rgba(10,20,80,.95));border:2px solid rgba(80,130,255,.55);color:white;font-size:1.25rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;box-shadow:0 0 14px rgba(60,100,255,.3),inset 0 1px 0 rgba(255,255,255,.15);position:relative;flex-shrink:0}
 .ll:hover:not(.used){border-color:var(--gold);box-shadow:0 0 20px rgba(240,192,64,.4)}
 .ll.used{opacity:.2;filter:grayscale(1);cursor:not-allowed}
 .ll-label{font-size:.45rem;font-weight:700;color:var(--muted);text-align:center;margin-top:-6px;letter-spacing:.5px;text-transform:uppercase}
@@ -1134,6 +1134,10 @@ function loadProfile(){
 }
 // Load saved name on startup
 document.addEventListener('DOMContentLoaded',loadProfile);
+
+// Fix mobile viewport height (address bar issue)
+function fixVH(){document.documentElement.style.setProperty('--vh',window.innerHeight+'px');}
+fixVH();window.addEventListener('resize',fixVH);
 // Also try immediately in case DOM is already ready
 if(document.readyState!=='loading')loadProfile();
 
