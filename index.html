@@ -94,9 +94,24 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--deep);color:va
 .ll.used{opacity:.25;cursor:not-allowed;text-decoration:line-through}
 
 /* Timer bar */
-.tbar-wrap{height:4px;background:rgba(255,255,255,.07);flex-shrink:0;position:relative}
+.tbar-wrap{height:6px;background:rgba(255,255,255,.07);flex-shrink:0;position:relative}
 .tbar{height:100%;background:linear-gradient(90deg,var(--gold2),var(--gold));transition:width 1s linear,background .5s}
-.tbar.urg{background:linear-gradient(90deg,#dc2626,#ef4444)}
+.tbar.urg{background:linear-gradient(90deg,#dc2626,#ef4444);animation:tbar-pulse .5s ease-in-out infinite}
+@keyframes tbar-pulse{0%,100%{opacity:1}50%{opacity:.6}}
+
+/* DANGER POPUP */
+#danger-pop{position:fixed;top:0;left:0;right:0;pointer-events:none;z-index:999;display:flex;justify-content:center;padding-top:60px;opacity:0;transition:opacity .2s}
+#danger-pop.show{opacity:1}
+.danger-msg{background:linear-gradient(135deg,#7f1d1d,#dc2626);color:white;font-size:1.1rem;font-weight:900;padding:10px 24px;border-radius:50px;letter-spacing:1px;box-shadow:0 4px 20px rgba(220,38,38,.6);animation:danger-bounce .4s cubic-bezier(.34,1.56,.64,1)}
+@keyframes danger-bounce{from{transform:scale(.7) translateY(-20px)}to{transform:scale(1) translateY(0)}}
+
+/* SCREEN FLASH */
+#red-flash{position:fixed;inset:0;background:rgba(220,38,38,0);pointer-events:none;z-index:998;transition:background .1s}
+#red-flash.flash{background:rgba(220,38,38,.18)}
+
+/* Timer pulse at low seconds */
+.qtnum.panic{animation:tpanic .3s ease-in-out infinite;color:var(--red)!important}
+@keyframes tpanic{0%,100%{transform:scale(1)}50%{transform:scale(1.25)}}
 
 /* Game body */
 .gbody{flex:1;overflow:hidden;display:flex;flex-direction:column;padding:10px 12px;gap:8px}
@@ -298,6 +313,8 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--deep);color:va
     </div>
   </div>
   <div class="tbar-wrap"><div class="tbar" id="tbar"></div></div>
+  <div id="danger-pop"><div class="danger-msg" id="danger-txt">⚡ KIES SNEL!</div></div>
+  <div id="red-flash"></div>
 
   <div class="gbody">
     <div class="qmeta">
@@ -404,8 +421,11 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--deep);color:va
 // ══════════════════════════════════════════════════════
 //  AUDIO
 // ══════════════════════════════════════════════════════
-let _ac=null;
-function getAC(){if(!_ac)_ac=new(window.AudioContext||window.webkitAudioContext)();if(_ac.state==='suspended')_ac.resume();return _ac;}
+let _ac=null,_acUnlocked=false;
+function unlockAC(){if(_acUnlocked)return;if(!_ac){try{_ac=new(window.AudioContext||window.webkitAudioContext)();}catch(e){return;}}if(_ac.state==='suspended')_ac.resume().then(()=>{_acUnlocked=true;});else _acUnlocked=true;}
+document.addEventListener('touchstart',unlockAC,{passive:true,capture:true});
+document.addEventListener('click',unlockAC,{passive:true,capture:true});
+function getAC(){unlockAC();return _ac;}
 function tone(f,d,type='sine',vol=.22,t0=0){
   try{const ctx=getAC(),o=ctx.createOscillator(),g=ctx.createGain();
   o.connect(g);g.connect(ctx.destination);o.type=type;o.frequency.value=f;
@@ -691,6 +711,8 @@ const QS=[
   {q:'Welke artiest won de meeste Grammy Awards?',o:['Michael Jackson','Madonna','Beyoncé','Taylor Swift'],c:2,d:'hard'},
   {q:'Hoe heet het grote Centrale reservaat in Suriname?',o:['Amazonewoud','Centraal Suriname Natuurreservaat','Groene Longwoud','Moengo Reservaat'],c:1,d:'hard'},
 ];
+// Tag questions by category (family=0, Suriname=1, general=2)
+QS.forEach((q,i)=>{q.cat=i<38?0:i<73?1:2;});
 
 // ══════════════════════════════════════════════════════
 //  CHAT STATS DATA (hardcoded from analysis)
@@ -804,10 +826,15 @@ function selChar2(idx,card,ch){
 // ══════════════════════════════════════════════════════
 function startGame(){
   if(!selChar)return;snd('click');
-  const easy=shuffle(QS.filter(q=>q.d==='easy'));
-  const med=shuffle(QS.filter(q=>q.d==='medium'));
-  const hard=shuffle(QS.filter(q=>q.d==='hard'));
-  gameQs=[...easy.slice(0,5),...med.slice(0,5),...hard.slice(0,5)];
+  function pick(d,n){
+    const fam=shuffle(QS.filter(q=>q.d===d&&q.cat===0));
+    const sur=shuffle(QS.filter(q=>q.d===d&&q.cat===1));
+    const gen=shuffle(QS.filter(q=>q.d===d&&q.cat===2));
+    // Always start with family, pad with Suriname then general
+    const pool=[...fam,...sur,...gen];
+    return pool.slice(0,n);
+  }
+  gameQs=[...shuffle(pick('easy',5)),...shuffle(pick('medium',5)),...shuffle(pick('hard',5))];
   currentQ=0;safeAmt=0;selAns=-1;llUsed={};sessionAchs=[];usedNoLL=true;answFast=false;
   gamesPlayed++;
   document.getElementById('g-img').src=selChar.img;
@@ -857,21 +884,46 @@ function toggleLdr(){snd('click');document.getElementById('ldr').classList.toggl
 // ══════════════════════════════════════════════════════
 //  TIMER
 // ══════════════════════════════════════════════════════
+const DANGER_MSGS=['⚡ KIES SNEL!','😱 TIJD LOOPT UIT!','🔥 SCHIET OP!','💀 LAATSTE KANS!','😰 NU OF NOOIT!','⏰ BIJNA TE LAAT!'];
+let _dangerIdx=0,_flashInt=null;
+
 function startTimer(){
   timerSec=30;updTimer();
+  hideDanger();
   timerInt=setInterval(()=>{
     timerSec--;updTimer();
     if(timerSec<=10){snd('tick');setEmotion('sweat');}
-    if(timerSec<=0){clearTimer();stopTension();revealAns(gameQs[currentQ].c,-1);setTimeout(()=>endGame(false),2500);}
+    if(timerSec<=5){showDanger();flashRed();}
+    if(timerSec<=0){clearTimer();stopTension();hideDanger();revealAns(gameQs[currentQ].c,-1);setTimeout(()=>endGame(false),2500);}
   },1000);
+  // Extra half-second ticks at <=5s
+  _flashInt=setInterval(()=>{
+    if(timerSec<=5&&timerSec>0){snd('tick');flashRed();}
+  },500);
 }
-function clearTimer(){clearInterval(timerInt);timerInt=null;}
+function clearTimer(){clearInterval(timerInt);clearInterval(_flashInt);timerInt=null;_flashInt=null;}
 function updTimer(){
   const t=document.getElementById('g-tsec'),b=document.getElementById('tbar');
   t.textContent=timerSec;
-  t.style.color=timerSec<=10?'var(--red)':timerSec<=20?'#f97316':'var(--gold)';
+  if(timerSec<=5){t.className='qtnum panic';}
+  else if(timerSec<=10){t.className='qtnum';t.style.color='var(--red)';}
+  else if(timerSec<=20){t.className='qtnum';t.style.color='#f97316';}
+  else{t.className='qtnum';t.style.color='var(--gold)';}
   b.style.width=(timerSec/30*100)+'%';
+  b.style.transition=timerSec<=5?'width .5s linear,background .3s':'width 1s linear,background .5s';
   if(timerSec<=10)b.classList.add('urg');else b.classList.remove('urg');
+}
+function showDanger(){
+  const p=document.getElementById('danger-pop'),txt=document.getElementById('danger-txt');
+  txt.textContent=DANGER_MSGS[_dangerIdx%DANGER_MSGS.length];
+  _dangerIdx++;
+  txt.style.animation='none';void txt.offsetWidth;txt.style.animation='';
+  p.classList.add('show');
+}
+function hideDanger(){document.getElementById('danger-pop').classList.remove('show');_dangerIdx=0;}
+function flashRed(){
+  const f=document.getElementById('red-flash');
+  f.classList.add('flash');setTimeout(()=>f.classList.remove('flash'),120);
 }
 
 // ══════════════════════════════════════════════════════
@@ -907,7 +959,7 @@ function pickAns(idx){
 function cancelAns(){snd('click');setEmotion('idle');document.getElementById('m-conf').style.display='none';document.querySelectorAll('.ab').forEach(b=>b.classList.remove('sel'));selAns=-1;}
 function confirmAns(){
   document.getElementById('m-conf').style.display='none';
-  clearTimer();stopTension();
+  clearTimer();stopTension();hideDanger();
   const q=gameQs[currentQ];
   revealAns(q.c,selAns);
   if(selAns===q.c){
