@@ -965,15 +965,17 @@ function selChar2(idx,card,ch){
 // ══════════════════════════════════════════════════════
 function startGame(){
   if(!selChar)return;snd('click');
+  // Categorieen: 0=familie, 1=surinaams, 2=algemeen
+  // Round-robin zodat elke ronde gemengd is
   function pick(d,n){
     const fam=shuffle(QS.filter(q=>q.d===d&&q.cat===0));
     const sur=shuffle(QS.filter(q=>q.d===d&&q.cat===1));
     const gen=shuffle(QS.filter(q=>q.d===d&&q.cat===2));
-    // Round-robin: 1 familie, 1 suriname, 1 algemeen, herhaal
-    const pool=[],srcs=[fam,sur,gen];
+    const all=shuffle(QS.filter(q=>q.d===d)); // fallback als cat ontbreekt
+    const pool=[],srcs=(fam.length||sur.length||gen.length)?[fam,sur,gen]:[all];
     let i=0;
     while(pool.length<n&&srcs.some(s=>s.length>0)){
-      const s=srcs[i%3];if(s.length>0)pool.push(s.shift());i++;
+      const s=srcs[i%srcs.length];if(s.length>0)pool.push(s.shift());i++;
     }
     return pool;
   }
