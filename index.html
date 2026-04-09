@@ -10,8 +10,9 @@
 html,body{height:100%;overflow:hidden;margin:0;padding:0}
 body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--deep);color:var(--text)}
 
-/* SCREENS — fixed viewport, padded below address bar */
-.screen{display:none;position:fixed;top:var(--screen-top,0px);left:0;right:0;height:var(--screen-height,100vh);flex-direction:column;overflow:hidden;padding-top:calc(env(safe-area-inset-top,0px) + 44px)}
+/* SCREENS — fixed viewport, uses dvh for dynamic address-bar handling */
+.screen{display:none;position:fixed;top:0;left:0;right:0;height:100dvh;height:100vh;flex-direction:column;overflow:hidden}
+@supports(height:100dvh){.screen{height:100dvh}}
 .screen.active{display:flex}
 /* Scrollable screens need overflow-y */
 #s-lb.active,#s-ach.active,#s-stats.active,#s-intro.active{overflow-y:auto}
@@ -22,7 +23,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--deep);color:va
 @keyframes ptfl{0%{transform:translateY(100vh) scale(0);opacity:0}10%{opacity:.5}90%{opacity:.2}100%{transform:translateY(-20px) scale(1);opacity:0}}
 
 /* ─── INTRO ─── */
-#s-intro{align-items:center;justify-content:center;text-align:center;padding:24px;background:radial-gradient(ellipse at 50% 30%,#0d2040 0%,var(--deep) 70%);position:relative;z-index:1;gap:12px}
+#s-intro{align-items:center;justify-content:center;text-align:center;padding:24px;padding-top:calc(env(safe-area-inset-top,0px) + 24px);background:radial-gradient(ellipse at 50% 30%,#0d2040 0%,var(--deep) 70%);position:relative;z-index:1;gap:12px}
 .logo-crown{font-size:3.5rem;animation:bounce 2s ease-in-out infinite;display:block}
 @keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
 .logo-title{font-size:clamp(2rem,8vw,3.8rem);font-weight:900;line-height:1;background:linear-gradient(135deg,#fff8e0 0%,var(--gold) 40%,var(--gold2) 70%,var(--gold) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:1px;text-transform:uppercase;filter:drop-shadow(0 2px 12px rgba(240,192,64,.4))}
@@ -43,7 +44,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--deep);color:va
 .name-input::placeholder{color:var(--muted);font-weight:400}
 
 /* ─── SCREEN HEADER ─── */
-.hdr{display:flex;align-items:center;padding:14px 16px;background:rgba(0,0,0,.35);border-bottom:1px solid rgba(255,255,255,.07);gap:12px;flex-shrink:0}
+.hdr{display:flex;align-items:center;padding:14px 16px;padding-top:calc(env(safe-area-inset-top,0px) + 14px);background:rgba(0,0,0,.35);border-bottom:1px solid rgba(255,255,255,.07);gap:12px;flex-shrink:0}
 .btn-back{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:white;width:40px;height:40px;border-radius:10px;cursor:pointer;font-size:1.1rem;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .hdr h2{font-size:1.15rem;color:var(--gold);flex:1}
 
@@ -66,8 +67,8 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--deep);color:va
 #s-game::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 42%,rgba(20,70,255,.22) 0%,rgba(10,40,180,.1) 35%,transparent 68%);pointer-events:none;z-index:0}
 .game-main,.ghdr,.tbar-wrap,.gfoot{position:relative;z-index:1}
 
-/* Game header */
-.ghdr{display:flex;align-items:center;padding:8px 10px;background:rgba(0,0,20,.7);border-bottom:1px solid rgba(60,100,255,.25);flex-shrink:0;gap:8px}
+/* Game header — safe-area-inset-top zodat notch/adresbalk nooit overlapt */
+.ghdr{display:flex;align-items:center;padding:8px 10px;padding-top:calc(env(safe-area-inset-top,0px) + 8px);background:rgba(0,0,20,.7);border-bottom:1px solid rgba(60,100,255,.25);flex-shrink:0;gap:8px}
 .plr-chip{display:flex;align-items:center;gap:7px;flex:1;min-width:0}
 .plr-img-wrap{display:none}
 .plr-img{width:32px;height:40px;object-fit:cover;object-position:top;border-radius:5px;border:1.5px solid var(--gold);display:block}
@@ -1143,20 +1144,7 @@ function loadProfile(){
 // Load saved name on startup
 document.addEventListener('DOMContentLoaded',loadProfile);
 
-// Fix mobile viewport height — uses visualViewport to exclude address bar
-function fixVH(){
-  const vv=window.visualViewport;
-  if(vv){
-    document.documentElement.style.setProperty('--screen-height',vv.height+'px');
-    document.documentElement.style.setProperty('--screen-top',vv.offsetTop+'px');
-  }else{
-    document.documentElement.style.setProperty('--screen-height',window.innerHeight+'px');
-    document.documentElement.style.setProperty('--screen-top','0px');
-  }
-}
-fixVH();
-if(window.visualViewport){window.visualViewport.addEventListener('resize',fixVH);window.visualViewport.addEventListener('scroll',fixVH);}
-window.addEventListener('resize',fixVH);
+// Geen fixVH meer nodig — CSS 100dvh regelt adresbalk automatisch
 // Also try immediately in case DOM is already ready
 if(document.readyState!=='loading')loadProfile();
 
