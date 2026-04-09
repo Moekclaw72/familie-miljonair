@@ -138,7 +138,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--deep);color:va
 
 /* Studio center — player character */
 .studio-center{flex:1;display:flex;align-items:center;justify-content:center;min-height:0}
-.studio-char{width:90px;height:112px;object-fit:cover;object-position:top;border-radius:12px;border:2px solid rgba(240,192,64,.5);box-shadow:0 0 40px rgba(240,192,64,.2),0 0 80px rgba(30,60,200,.15);animation:sway 3s ease-in-out infinite}
+.studio-char{width:120px;height:150px;object-fit:cover;object-position:top;border-radius:14px;border:2px solid rgba(240,192,64,.55);box-shadow:0 0 50px rgba(240,192,64,.25),0 0 90px rgba(30,60,200,.18);animation:sway 3s ease-in-out infinite}
 
 /* RIGHT: Money ladder */
 .ldr-col{width:75px;flex-shrink:0;display:flex;flex-direction:column;background:linear-gradient(180deg,rgba(5,5,30,.9),rgba(2,2,18,.95));border:1px solid rgba(40,70,200,.25);border-radius:6px;overflow:hidden;box-shadow:inset 0 0 20px rgba(0,0,40,.5)}
@@ -271,6 +271,21 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--deep);color:va
 .end-achs{display:flex;gap:7px;flex-wrap:wrap;justify-content:center;max-width:340px}
 .ea{background:rgba(240,192,64,.1);border:1px solid rgba(240,192,64,.3);border-radius:8px;padding:4px 9px;font-size:.72rem}
 
+/* ── REACTIE POP — WOW / KOM OP / JAMMER JOH ── */
+#react-pop{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(0);z-index:200;pointer-events:none;text-align:center;transition:transform .2s cubic-bezier(.34,1.56,.64,1),opacity .2s}
+#react-pop.show{transform:translate(-50%,-50%) scale(1)}
+#react-pop.hide{transform:translate(-50%,-50%) scale(0);opacity:0}
+.react-txt{font-size:clamp(2rem,10vw,3.5rem);font-weight:900;letter-spacing:2px;text-transform:uppercase;text-shadow:0 0 30px currentColor,0 4px 20px rgba(0,0,0,.8);filter:drop-shadow(0 0 12px currentColor)}
+.react-txt.ok{color:#22c55e}
+.react-txt.bad{color:#ef4444}
+.react-txt.go{color:var(--gold)}
+
+/* ── CHAT QUOTE FLITS — vanuit links ── */
+#chat-flits{position:fixed;bottom:130px;left:-340px;width:min(80%,300px);background:rgba(8,16,40,.95);border:1.5px solid rgba(80,140,255,.35);border-radius:14px;padding:9px 13px;z-index:25;transition:left .4s cubic-bezier(.34,1.56,.64,1);box-shadow:0 4px 20px rgba(0,0,40,.7);pointer-events:none}
+#chat-flits.show{left:8px}
+.cf-header{font-size:.55rem;color:rgba(150,180,255,.7);margin-bottom:3px;font-weight:700;text-transform:uppercase;letter-spacing:1px}
+.cf-msg{font-size:.75rem;color:#ddeaff;font-style:italic;line-height:1.35}
+
 /* ─── CONFETTI ─── */
 .cfi{position:fixed;width:8px;height:8px;opacity:0;pointer-events:none;z-index:200;animation:cfl linear forwards}
 @keyframes cfl{0%{opacity:1;transform:translateY(-10px) rotate(0deg) scale(1)}100%{opacity:0;transform:translateY(105vh) rotate(720deg) scale(.5)}}
@@ -377,6 +392,15 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--deep);color:va
     <button class="btn-walk" id="walkbtn" onclick="tryWalk()" style="display:none">Stoppen (👑 <span id="walkami">0</span>)</button>
     <button id="killbtn" onclick="openKill()" style="display:none;background:rgba(220,38,38,.12);border:1px solid rgba(220,38,38,.35);color:#fca5a5;padding:4px 10px;border-radius:16px;cursor:pointer;font-size:.65rem;font-weight:700">💀 Elimineer!</button>
     <button class="btn-lb" onclick="showMiniLB()">🏆 Ranglijst</button>
+  </div>
+
+  <!-- Reactie pop WOW/KOM OP/JAMMER -->
+  <div id="react-pop"><div class="react-txt" id="react-txt">WOW!</div></div>
+
+  <!-- Chat quote flits van links -->
+  <div id="chat-flits">
+    <div class="cf-header" id="cf-who">💬 Familiechat</div>
+    <div class="cf-msg" id="cf-msg">"..."</div>
   </div>
 
   <!-- Trash talk bubble (buiten game-main, fixed) -->
@@ -648,6 +672,70 @@ function hideTrashTalk(){
 }
 
 // ══════════════════════════════════════════════════════
+//  REACTIE POP — WOW / KOM OP / JAMMER JOH
+// ══════════════════════════════════════════════════════
+const REACTS={
+  ok:['WOW! 🎉','YES!! 💪','GEWELDIG! 🔥','GENIAAL! 🧠','PERFECT! ⭐','BRILJANT! 👑','JA!! 🎊','TOP!! 🚀'],
+  bad:['JAMMER JOH! 😢','OHHH! 😱','HELAAS! 💔','BIJNA! 😤','OEPS! 🙈','ZO DICHTBIJ! 😭','NEEEE! 😩'],
+  go:['KOM OP! ⚡','SCHIET OP! 🏃','TIK TAK! ⏰','DURF JE! 😤','JIJ KAN DIT! 💪','FOCUS! 🎯','GA ERVOOR! 🔥'],
+};
+let _reactTimer=null;
+function showReact(type){
+  const list=REACTS[type]||REACTS.go;
+  const txt=list[Math.floor(Math.random()*list.length)];
+  const el=document.getElementById('react-txt');
+  const pop=document.getElementById('react-pop');
+  el.textContent=txt;
+  el.className='react-txt '+(type==='ok'?'ok':type==='bad'?'bad':'go');
+  pop.classList.remove('hide');pop.classList.add('show');
+  clearTimeout(_reactTimer);
+  _reactTimer=setTimeout(()=>{pop.classList.remove('show');pop.classList.add('hide');},1400);
+}
+
+// ══════════════════════════════════════════════════════
+//  CHAT QUOTE FLITS — echte quotes uit de familiechat
+// ══════════════════════════════════════════════════════
+const CHAT_FLITS=[
+  {who:'💬 Geetha (06:45)',msg:'Gm!! Goedemorgen allemaal 😴☀️'},
+  {who:'💬 Chella',msg:'EKS!! Wat een vraag zeg!! 😱'},
+  {who:'💬 Jennifer',msg:'Ik werk als een paard maar verdien als een ezel 😂'},
+  {who:'💬 Geetha',msg:'En dan toch verliezen bij het straatje... 😔 250 euro weg'},
+  {who:'💬 Daan',msg:'...'},
+  {who:'💬 Loek 🚛',msg:'Rij de A10 maar ik weet het antwoord! 🥩'},
+  {who:'💬 Roy',msg:'Doe het gewoon. Punt. 👊'},
+  {who:'💬 Chella',msg:'OMG ik heb honger maar focus!! 😩🍔'},
+  {who:'💬 Berry',msg:'Kort maar krachtig — ga ervoor! 💪'},
+  {who:'💬 Gaby 🍷',msg:'In de kinderopvang leer je alles hoor! 😄'},
+  {who:'💬 Armando',msg:'Bro vertrouw de verhuizer gewoon! 🚚'},
+  {who:'💬 Anisa',msg:'Nagels net gedaan maar... focus! 💅'},
+  {who:'💬 Kawita',msg:'Schatje jij kan dit echt!! 💕'},
+  {who:'💬 Shreya',msg:'Papa weet het altijd hoor!! 🤓'},
+  {who:'💬 Geetha',msg:'Gm gm gm... maar dit weet ik niet 😅'},
+  {who:'💬 Chella',msg:'Wacht ik zie een gezicht in het scherm... nee focus! 😂'},
+  {who:'💬 Jennifer',msg:'Gegoogeld hoor maar ik zeg niets 😇'},
+  {who:'💬 Roy',msg:'Stop nadenken. Antwoord. Punt.'},
+  {who:'💬 Loek 🚛',msg:'Na de A10 weet je pas wat stress is... 😂'},
+  {who:'💬 Gaby 🍷',msg:'Devan zei ook dat antwoord! 😄'},
+  {who:'💬 Berry',msg:'Feyenoord speelt zo maar eerst dit! ⚽'},
+  {who:'💬 Armando',msg:'Bro. Dozen optillen is harder dan dit! 💪'},
+  {who:'💬 Daan',msg:'Stil. Denk. Antwoord.'},
+  {who:'💬 Geetha',msg:'Mama zegt: vertrouw jezelf! 💪 Gm!!'},
+  {who:'💬 Kawita',msg:'10 jaar getrouwd en nog steeds kampioen! 👑'},
+];
+let _flitsTimer=null;
+function showChatFlits(){
+  if(Math.random()>0.45)return; // 45% kans
+  const f=CHAT_FLITS[Math.floor(Math.random()*CHAT_FLITS.length)];
+  document.getElementById('cf-who').textContent=f.who;
+  document.getElementById('cf-msg').textContent='"'+f.msg+'"';
+  const el=document.getElementById('chat-flits');
+  el.classList.add('show');
+  clearTimeout(_flitsTimer);
+  _flitsTimer=setTimeout(()=>el.classList.remove('show'),4000);
+}
+function hideChatFlits(){clearTimeout(_flitsTimer);document.getElementById('chat-flits').classList.remove('show');}
+
+// ══════════════════════════════════════════════════════
 //  MINI LEADERBOARD IN GAME
 // ══════════════════════════════════════════════════════
 function showMiniLB(){
@@ -760,6 +848,36 @@ const QS=[
   {q:'Wat zei Geetha dat ze op oud en nieuw had opgegeten?',o:['Een zak chips','Een doos bonbons','Een taart','Een pak koeken'],c:1,d:'medium'},
   {q:'Hoe heet de dochter van Ervina?',o:['Shreya','Naleya','Anisa','Bella'],c:2,d:'medium'},
   {q:'Waarvoor ging Jennifer met glad ijs in jan 2026?',o:['Dokter','Tandarts','Fysiotherapeut','Sportschool'],c:2,d:'medium'},
+  // FAMILIE EXTRA EASY
+  {q:'Wat is de bijnaam van Geetha in de familiechat?',o:['Mama G','G Jagroep','Gee','Tante G'],c:1,d:'easy'},
+  {q:'Wie werkt er in de kinderopvang?',o:['Sindy','Kawita','Gaby','Ervinna'],c:2,d:'easy'},
+  {q:'Wat doet Anisa elke woensdag?',o:['Koken','Werken','Zwemmen','Sporten'],c:2,d:'easy'},
+  {q:'Hoe oud is Shira (dochter van Berry en Jennifer)?',o:['7 jaar','8 jaar','10 jaar','12 jaar'],c:2,d:'easy'},
+  {q:'Hoe oud is Chloé (dochter van Berry en Jennifer)?',o:['5 jaar','6 jaar','7 jaar','9 jaar'],c:2,d:'easy'},
+  {q:'Wie is de man van Ervinna?',o:['Berry','Daan','Moek','Roy'],c:3,d:'easy'},
+  {q:'Hoe oud is Devan, de zoon van Gaby?',o:['8 jaar','9 jaar','11 jaar','13 jaar'],c:2,d:'easy'},
+  {q:'Wat doet Jennifer thuis als bijbaantje?',o:['Koken','Wimpers/lashes','Nagels','Kapster'],c:1,d:'easy'},
+  {q:'Wie is de moeder van Shreya?',o:['Jennifer','Ervinna','Kawita','Sindy'],c:2,d:'easy'},
+  {q:'Wie zijn de ouders van Devan?',o:['Berry & Jennifer','Armando & Sindy','Roy & Ervinna','Gaby (alleen)'],c:3,d:'easy'},
+  {q:'Wat is de voornaam van de man van Chella/Richella?',o:['Roy','Berry','Daan','Loek'],c:2,d:'easy'},
+  {q:'Wie stuurt ALTIJD als eerste "Gm..." in de ochtend?',o:['Loek','Berry','Geetha','Jennifer'],c:2,d:'easy'},
+  // FAMILIE EXTRA MEDIUM
+  {q:'Hoeveel berichten stuurde Jennifer (Sjenni) in de familiechat?',o:['224','307','428','458'],c:2,d:'medium'},
+  {q:'Hoeveel berichten zijn er TOTAAL in de familiechat verstuurd?',o:['987','1.234','1.987','2.500'],c:2,d:'medium'},
+  {q:'Wie beheert de Familiepot-administratie?',o:['Geetha','Jennifer','Gaby','Kawita'],c:2,d:'medium'},
+  {q:'Op welke dag betaalt de familie de maandelijkse Familiepot?',o:['Eerste maandag','Laatste woensdag','Eerste vrijdag','Elke zaterdag'],c:1,d:'medium'},
+  {q:'Hoeveel berichten stuurde Roy in de familiechat?',o:['45','80','123','157'],c:1,d:'medium'},
+  {q:'Welk bijzonder feest vierden Berry én Jennifer op 1 oktober 2025?',o:['Huwelijksverjaardag','1 jaar rookvrij','10 jaar samen','Bevordering op het werk'],c:1,d:'medium'},
+  {q:'Welke verjaardag vierde de moeder van Gaby in november 2025?',o:['55e','60e','65e','70e'],c:1,d:'medium'},
+  {q:'Wie zei: "ik werk als een paard maar verdien als een ezel"?',o:['Geetha','Chella','Jennifer','Kawita'],c:2,d:'medium'},
+  {q:'Wie omschrijft de familie als "kort maar krachtig"?',o:['Daan','Roy','Berry','Loek'],c:2,d:'medium'},
+  {q:'Hoeveel berichten stuurde Moek in de familiechat?',o:['45','81','123','224'],c:1,d:'medium'},
+  // FAMILIE EXTRA HARD
+  {q:'Hoeveel berichten stuurde Ervinna totaal in de familiechat?',o:['80','107','137','224'],c:2,d:'hard'},
+  {q:'Hoeveel berichten stuurde Berry totaal in de familiechat?',o:['80','81','107','123'],c:3,d:'hard'},
+  {q:'Wie staat op nummer 5 in de chatberichten ranglijst?',o:['Berry','Moek','Ervinna','Roy'],c:2,d:'hard'},
+  {q:'Op welke datum is de verjaardag van Ervinna?',o:['1 januari','8 oktober','14 november','31 januari'],c:1,d:'hard'},
+  {q:'Wie werd op 31 januari 2026 precies 20 jaar oud?',o:['Devan','Naleya','Duncan','Shira'],c:2,d:'hard'},
   // FAMILIE HARD
   {q:'Wat is de verjaardag van Chloé (dochter van Berry & Jennifer)?',o:['26-06-2017','21-04-2015','29-12-2022','04-04-2020'],c:0,d:'hard'},
   {q:'Wat is de verjaardag van Shira?',o:['26-06-2017','21-04-2015','29-12-2022','04-04-2020'],c:1,d:'hard'},
@@ -779,7 +897,7 @@ const QS=[
   {q:'Hoe lang was Loek al gestopt met roken in oktober 2025?',o:['1 jaar','2 jaar','3 jaar','5 jaar'],c:2,d:'medium'},
   {q:'Wanneer is de verjaardag van Geetha?',o:['1 januari','8 oktober','14 november','31 januari'],c:1,d:'medium'},
   {q:'Wat deed Geetha op Oud en Nieuw naast het straatje spelen?',o:['Ze danste de hele nacht','Ze at een hele doos bonbons op','Ze stak vuurwerk af','Ze keek een film'],c:1,d:'medium'},
-  {q:'Op welke datum hebben ZOWEL Daan als Richella hun verjaardag?',o:['8 oktober','31 januari','14 november','25 december'],c:2,d:'hard'},
+  {q:'Op welke datum is de verjaardag van Richella?',o:['8 oktober','31 januari','14 november','25 december'],c:2,d:'hard'},
   {q:'Hoeveel euro betaalt Chella elke keer voor parkeren bij het ziekenhuis?',o:['5 euro','10 euro','15 euro','20 euro'],c:2,d:'hard'},
   {q:'Wie werd op 31 januari 2026 precies 20 jaar?',o:['Devan','Naleya','Duncan','Shira'],c:2,d:'hard'},
   {q:'Op welke datum zou de moeder van Loek 102 jaar zijn geworden?',o:['1 januari','6 januari','8 oktober','14 november'],c:1,d:'hard'},
@@ -869,9 +987,102 @@ const QS=[
   {q:'Welk land heeft de langste kustlijn ter wereld?',o:['Australië','Rusland','Canada','Amerika'],c:2,d:'hard'},
   {q:'Welke artiest won de meeste Grammy Awards?',o:['Michael Jackson','Madonna','Beyoncé','Taylor Swift'],c:2,d:'hard'},
   {q:'Hoe heet het grote Centrale reservaat in Suriname?',o:['Amazonewoud','Centraal Suriname Natuurreservaat','Groene Longwoud','Moengo Reservaat'],c:1,d:'hard'},
+  // SURINAAMS EXTRA EASY — aanvulling
+  {q:'Wat is "banannenbrood" in het Surinaams ook wel?',o:['Bojo','Bara','Baka bana','Pom'],c:2,d:'easy'},
+  {q:'Welke grote rivier stroomt door Paramaribo?',o:['Corantijn','Marowijne','Surinamerivier','Cottica'],c:2,d:'easy'},
+  {q:'Wat eet je bij een Surinaams ontbijt als traditioneel gerecht?',o:['Croissant','Pap','Hete peper met eieren','Roti met ei en achar'],c:3,d:'easy'},
+  {q:'Hoe heet een typisch Surinaams straatvoedsel van gebakken deeg?',o:['Bojo','Bara','Roti','Pom'],c:1,d:'easy'},
+  {q:'Wat is "achar"?',o:['Een Surinaams dessert','Gepekelde groenten/chutney','Een soort soep','Een rijstgerecht'],c:1,d:'easy'},
+  // ALGEMEEN AANVULLING
+  {q:'Hoeveel gram is een kilogram?',o:['10 gram','100 gram','1000 gram','10000 gram'],c:2,d:'easy'},
+  {q:'Welk land won het WK voetbal in 2018?',o:['Brazilië','Duitsland','Kroatië','Frankrijk'],c:3,d:'easy'},
+  {q:'Wat is de hoofdstad van Spanje?',o:['Barcelona','Valencia','Madrid','Sevilla'],c:2,d:'easy'},
+  {q:'Wie is de uitvinder van de telefoon?',o:['Thomas Edison','Nikola Tesla','Alexander Graham Bell','Guglielmo Marconi'],c:2,d:'medium'},
+  {q:'In welk jaar werd Facebook opgericht?',o:['2002','2003','2004','2005'],c:2,d:'medium'},
+  {q:'Welke planeet draait het snelst om zijn as?',o:['Aarde','Mars','Jupiter','Saturnus'],c:2,d:'medium'},
+  {q:'Wie schilderde "De Nachtwacht"?',o:['Jan Steen','Vermeer','Rembrandt','Frans Hals'],c:2,d:'medium'},
+  {q:'In welk jaar landde de eerste mens op de maan?',o:['1965','1967','1969','1971'],c:2,d:'medium'},
+  {q:'Wat is de bijnaam van de stad New York?',o:['The Big Apple','The Big City','The Golden Gate','Sin City'],c:0,d:'medium'},
+  {q:'Hoeveel landen zijn er in Afrika?',o:['44','48','54','62'],c:2,d:'hard'},
+  {q:'Welke religie heeft veel aanhangers onder Hindoestanen in Suriname?',o:['Islam','Christendom','Hindoeïsme','Boeddhisme'],c:2,d:'easy'},
+  {q:'Wat is "wiri wiri"?',o:['Een dans','Een kleine hete peper','Een soort vis','Een Surinaams lied'],c:1,d:'easy'},
+  {q:'Welk land koloniseerde Suriname het langst?',o:['Engeland','Portugal','Spanje','Nederland'],c:3,d:'easy'},
+  {q:'Wat is de kleur van de grote ster op de Surinaamse vlag?',o:['Wit','Rood','Geel','Blauw'],c:2,d:'easy'},
+  {q:'Hoe heet de nationale vogel van Suriname?',o:['Papegaai','Toucan','Scarlet ibis','Kolibrie'],c:2,d:'easy'},
+  {q:'Wat is een "nasi"?',o:['Surinaams brood','Gebakken rijstgerecht','Een soep','Een dessert'],c:1,d:'easy'},
+  {q:'Wat is "bojo"?',o:['Surinaams cassave-kokostaart','Een rijstgerecht','Een soep','Een dans'],c:0,d:'easy'},
+  {q:'Wie wordt beschouwd als de vader van Suriname?',o:['Desi Bouterse','Johan Ferrier','Anton de Kom','Chan Santokhi'],c:2,d:'easy'},
+  // SURINAAMS EXTRA MEDIUM
+  {q:'Hoe heet de rivier die de grens vormt met Guyana in het westen?',o:['Surinamerivier','Corantijnrivier','Cotticarivier','Marowijnerivier'],c:1,d:'medium'},
+  {q:'Wat is "trassie"?',o:['Surinaamse saus','Garnalen-/vispasta','Een soort soep','Een dessert'],c:1,d:'medium'},
+  {q:'Hoeveel procent van Suriname bestaat uit regenwoud?',o:['60%','75%','87%','93%'],c:3,d:'medium'},
+  {q:'Hoe heet het Surinaamse oud-en-nieuwfeest in het Sranantongo?',o:['Kwakoe','Phagwa','Owru Yari','Ketikoti'],c:2,d:'medium'},
+  {q:'Welke sport is het populairst in Suriname?',o:['Cricket','Voetbal','Basketbal','Volleybal'],c:1,d:'medium'},
+  {q:'Wat is "ketikoti"?',o:['Hindoe nieuwjaar','Afschaffing slavernij herdenking','Een begrafenisritueel','Carnaval'],c:1,d:'medium'},
+  {q:'Wat is "Parwa" (ook wel Phagwa)?',o:['Surinaams nieuwjaar','Hindoestaans kleurenfeest','Lichtjesfeest','Oogstfeest'],c:1,d:'medium'},
+  {q:'Welke rivier vormt de grens met Frans-Guyana aan de oostkant?',o:['Surinamerivier','Corantijnrivier','Marowijnerivier','Cotticarivier'],c:2,d:'medium'},
+  {q:'Wat is "bruine bonen rijst"?',o:['Een dessert','Klassiek Surinaams hoofdgerecht','Een soep','Een snack'],c:1,d:'medium'},
+  {q:'Hoe heet de beroemde markt in Paramaribo?',o:['Centrale Markt','Wanica Markt','Centrale Bazaar','De Markt van Paramaribo'],c:0,d:'medium'},
+  {q:'Wat is "heri heri"?',o:['Een dans','Gekookte groenten met vis en ei','Een soep','Een dessert'],c:1,d:'medium'},
+  // SURINAAMS EXTRA HARD
+  {q:'Wie is de president van Suriname die in 2020 werd gekozen?',o:['Desi Bouterse','Chan Santokhi','Jules Wijdenbosch','Ronnie Brunswijk'],c:1,d:'hard'},
+  {q:'Hoe heet de grootste dam en stuwmeer van Suriname?',o:['Afobakkadam','Brokopondodam','Coticadam','Surinamedam'],c:0,d:'hard'},
+  {q:'Welke taal spreken de Saramaccaners (Marrons) in Suriname?',o:['Sranantongo','Saramaccaans','Javaans','Aukaans'],c:1,d:'hard'},
+  {q:'Wat is het hoogste punt van Suriname?',o:['Voltzberg','Tafelberg','Julianatop','Brownsberg'],c:2,d:'hard'},
+  {q:'In welk jaar werd Suriname officieel lid van de VN?',o:['1970','1975','1980','1985'],c:1,d:'hard'},
+  {q:'Welk percentage van de Surinaamse bevolking is van Hindoestaanse afkomst?',o:['15%','27%','37%','48%'],c:2,d:'hard'},
+  {q:'Hoe heet de historische binnenstad van Paramaribo (UNESCO Werelderfgoed)?',o:['Oude Stad','Binnenstad Paramaribo','Fort Zeelandia','Waterkant'],c:1,d:'hard'},
+  // ALGEMEEN EXTRA EASY
+  {q:'Hoeveel cm is een meter?',o:['10 cm','50 cm','100 cm','1000 cm'],c:2,d:'easy'},
+  {q:'Welke planeet heeft ringen?',o:['Jupiter','Mars','Saturnus','Venus'],c:2,d:'easy'},
+  {q:'Wat is het grootste zoogdier ter wereld?',o:['Olifant','Nijlpaard','Blauwe vinvis','Giraf'],c:2,d:'easy'},
+  {q:'Hoeveel weken heeft een jaar?',o:['48','50','52','54'],c:2,d:'easy'},
+  {q:'Welk dier is het symbool van Nederland?',o:['Adelaar','Tulp','Leeuw','Molen'],c:2,d:'easy'},
+  {q:'Hoe heet de snelste vogel ter wereld?',o:['Arend','Albatros','Slechtvalk','Gierzwaluw'],c:2,d:'easy'},
+  {q:'Wat is het grootste land ter wereld?',o:['China','Amerika','Canada','Rusland'],c:3,d:'easy'},
+  {q:'Hoeveel minuten heeft een uur?',o:['30','60','90','100'],c:1,d:'easy'},
+  {q:'Hoe heet de taal die in Brazilië wordt gesproken?',o:['Spaans','Frans','Portugees','Braziliaans'],c:2,d:'easy'},
+  {q:'Welk nummer is een priemgetal?',o:['4','6','9','7'],c:3,d:'easy'},
+  {q:'Hoeveel ogen heeft een spin?',o:['2','4','6','8'],c:3,d:'easy'},
+  {q:'Wat is de snelste auto ter wereld (merk in 2024)?',o:['Ferrari','Lamborghini','Bugatti','Koenigsegg'],c:3,d:'easy'},
+  {q:'Welk land heeft de grootste bevolking ter wereld (2024)?',o:['China','Amerika','Indonesië','India'],c:3,d:'easy'},
+  {q:'Hoeveel letters heeft het alfabet?',o:['24','25','26','27'],c:2,d:'easy'},
+  {q:'Wat is 15 × 15?',o:['175','200','225','250'],c:2,d:'easy'},
+  // ALGEMEEN EXTRA MEDIUM
+  {q:'Hoeveel landen telt de Europese Unie (2024)?',o:['25','27','28','30'],c:1,d:'medium'},
+  {q:'Wie is de rijkste persoon ter wereld (2024)?',o:['Bill Gates','Jeff Bezos','Elon Musk','Mark Zuckerberg'],c:2,d:'medium'},
+  {q:'Hoeveel WK-titels voetbal heeft Brazilië gewonnen?',o:['3','4','5','6'],c:2,d:'medium'},
+  {q:'In welk jaar begon de COVID-19 pandemie officieel?',o:['2018','2019','2020','2021'],c:2,d:'medium'},
+  {q:'Welke rapper won als eerste de Pulitzer Prize voor muziek?',o:['Jay-Z','Kanye West','Kendrick Lamar','Drake'],c:2,d:'medium'},
+  {q:'Wat is de hoofdstad van Japan?',o:['Osaka','Kyoto','Hiroshima','Tokio'],c:3,d:'medium'},
+  {q:'Hoeveel spelers staan er per team op het veld bij basketbal?',o:['4','5','6','7'],c:1,d:'medium'},
+  {q:'In welk jaar werd Nelson Mandela vrijgelaten na 27 jaar gevangenis?',o:['1985','1988','1990','1994'],c:2,d:'medium'},
+  {q:'Welk merk maakt de Galaxy-telefoons?',o:['Huawei','Sony','Samsung','LG'],c:2,d:'medium'},
+  {q:'In welk jaar werd TikTok wereldwijd gelanceerd?',o:['2014','2016','2018','2020'],c:1,d:'medium'},
+  {q:'Wat is de nationale kleur van het Nederlands elftal?',o:['Blauw','Rood','Oranje','Geel'],c:2,d:'medium'},
+  {q:'Welke film won de Oscar voor Beste Film in 2024?',o:['Oppenheimer','Poor Things','Barbie','Killers of the Flower Moon'],c:0,d:'medium'},
+  {q:'Wie won het EK voetbal 2020 (gespeeld in 2021)?',o:['Frankrijk','Portugal','Italië','Engeland'],c:2,d:'medium'},
+  {q:'Hoeveel punten levert een touchdown op in American Football?',o:['3','6','7','8'],c:1,d:'medium'},
+  {q:'Wat is de langste rivier ter wereld?',o:['Mississippi','Amazon','Nijl','Yangtze'],c:2,d:'medium'},
+  // ALGEMEEN EXTRA HARD
+  {q:'Wat is de chemische formule van tafelzout?',o:['NaCl','KCl','CaCl2','MgCl'],c:0,d:'hard'},
+  {q:'In welk jaar viel Constantinopel (het Byzantijnse Rijk)?',o:['1346','1389','1453','1492'],c:2,d:'hard'},
+  {q:'Wie schreef "De Goddelijke Komedie"?',o:['Petrarca','Dante Alighieri','Boccaccio','Machiavelli'],c:1,d:'hard'},
+  {q:'Wat is het kleinste land ter wereld (qua oppervlakte)?',o:['Monaco','Liechtenstein','San Marino','Vaticaanstad'],c:3,d:'hard'},
+  {q:'Hoeveel chromosomen heeft een gezonde mens?',o:['23','44','46','48'],c:2,d:'hard'},
+  {q:'Wie ontdekte penicilline?',o:['Louis Pasteur','Marie Curie','Alexander Fleming','Robert Koch'],c:2,d:'hard'},
+  {q:'In welk jaar vond de Franse Revolutie plaats?',o:['1769','1776','1789','1804'],c:2,d:'hard'},
+  {q:'Hoeveel elementen staan er op het periodiek systeem (2024)?',o:['108','112','118','120'],c:2,d:'hard'},
+  {q:'In welk jaar ontdekte Christoffel Columbus Amerika?',o:['1488','1492','1498','1502'],c:1,d:'hard'},
+  {q:'Wat is de naam van het theorema van Pythagoras?',o:['a²+b²=c³','a²+b²=c²','a+b=c','a³+b³=c³'],c:1,d:'hard'},
+  {q:'Welk land heeft 11 officiële talen?',o:['India','Nigeria','Zuid-Afrika','Canada'],c:2,d:'hard'},
+  {q:'Hoe heet de president die de atoombom op Japan liet gooien?',o:['Franklin Roosevelt','Dwight Eisenhower','Harry Truman','John F. Kennedy'],c:2,d:'hard'},
+  {q:'Wat is de naam van de eerste kunstmatige satelliet in de ruimte?',o:['Apollo 1','Sputnik 1','Explorer 1','Vostok 1'],c:1,d:'hard'},
+  {q:'Wie componeerde de 9e symfonie ondanks doofheid?',o:['Mozart','Bach','Beethoven','Brahms'],c:2,d:'hard'},
+  {q:'Wat is het zwaarste element op het periodiek systeem?',o:['Uranium','Plutonium','Oganesson','Lood'],c:2,d:'hard'},
 ];
-// Tag questions by category (family=0, Suriname=1, general=2)
-QS.forEach((q,i)=>{q.cat=i<57?0:i<92?1:2;});
+// Tag questions by category (family=0, Suriname=1, general=2) — auto op basis van positie
+QS.forEach((q,i)=>{q.cat=i<84?0:i<119?1:2;});
 
 // ══════════════════════════════════════════════════════
 //  CHAT STATS DATA (hardcoded from analysis)
@@ -1114,8 +1325,12 @@ function loadQ(){
   // Show kill button only at last question
   document.getElementById('killbtn').style.display=currentQ===14?'block':'none';
   updateLdr();startTimer();startTension();setEmotion('idle');
-  // Trash talk van de #1 — na 2 seconden insturen
+  // Trash talk van de #1 — na 2s
   setTimeout(showTrashTalk, 2000);
+  // Chat-quote flits — na 3.5s (niet tegelijk met trash talk)
+  setTimeout(showChatFlits, 3500);
+  // KOM OP reactie bij vraag 10+ (spanning)
+  if(currentQ>=9) setTimeout(()=>showReact('go'), 1200);
 }
 
 // ══════════════════════════════════════════════════════
@@ -1139,6 +1354,8 @@ function confirmAns(){
   revealAns(q.c,selAns);
   if(selAns===q.c){
     snd('correct');setEmotion('correct');
+    setTimeout(()=>showReact('ok'),300);
+    hideChatFlits();
     if(currentQ===4||currentQ===9)safeAmt=LADDER[currentQ].v;
     if(answFast)grantAch('fast');
     answFast=false;currentQ++;
@@ -1146,6 +1363,8 @@ function confirmAns(){
     else{setTimeout(()=>{snd('levelup');setTimeout(()=>loadQ(),300);},2000);}
   }else{
     snd('wrong');setEmotion('wrong');
+    setTimeout(()=>showReact('bad'),300);
+    hideChatFlits();
     setTimeout(()=>endGame(false),2600);
   }
 }
