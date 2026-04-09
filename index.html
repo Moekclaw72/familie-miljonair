@@ -11,7 +11,7 @@ html,body{height:100%;overflow:hidden;margin:0;padding:0}
 body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--deep);color:var(--text)}
 
 /* SCREENS — fixed viewport, padded below address bar */
-.screen{display:none;position:fixed;top:var(--screen-top,0px);left:0;right:0;height:var(--screen-height,100vh);flex-direction:column;overflow:hidden;padding-top:max(env(safe-area-inset-top,0px),12px)}
+.screen{display:none;position:fixed;top:var(--screen-top,0px);left:0;right:0;height:var(--screen-height,100vh);flex-direction:column;overflow:hidden;padding-top:calc(env(safe-area-inset-top,0px) + 16px)}
 .screen.active{display:flex}
 /* Scrollable screens need overflow-y */
 #s-lb.active,#s-ach.active,#s-stats.active,#s-intro.active{overflow-y:auto}
@@ -636,8 +636,6 @@ const QS=[
   {q:'Wie is de stiefmoeder van Richella, Jennifer en Armando?',o:['Gaby','Kawita','Ervina','Sindy'],c:2,d:'medium'},
   {q:'Welke series keek Moek?',o:['Breaking Bad & Friends','How to get away with murder & Ozark','Suits & Game of Thrones','The Office & Stranger Things'],c:1,d:'medium'},
   {q:'Wat maakte Loek met zijn recept op oud en nieuw?',o:['Saotosoep','Pom','Oliebollen','Roti'],c:2,d:'medium'},
-  {q:'Hoe oud is Shreya?',o:['7','8','9','10'],c:2,d:'medium'},
-  {q:'Hoe oud is Devan (zoon van Gaby)?',o:['9','10','11','12'],c:2,d:'medium'},
   {q:'Wie heeft een "beef" met Sjenni?',o:['Gaby','Kawita','Sindy','Ervina'],c:1,d:'medium'},
   {q:'Wie is de biologische moeder van Richella, Jennifer en Armando?',o:['Ervina','Kawita','Geetha','Sindy'],c:2,d:'medium'},
   {q:'Wat zei Geetha dat ze op oud en nieuw had opgegeten?',o:['Een zak chips','Een doos bonbons','Een taart','Een pak koeken'],c:1,d:'medium'},
@@ -852,9 +850,13 @@ function startGame(){
     const fam=shuffle(QS.filter(q=>q.d===d&&q.cat===0));
     const sur=shuffle(QS.filter(q=>q.d===d&&q.cat===1));
     const gen=shuffle(QS.filter(q=>q.d===d&&q.cat===2));
-    // Always start with family, pad with Suriname then general
-    const pool=[...fam,...sur,...gen];
-    return pool.slice(0,n);
+    // Round-robin: 1 familie, 1 suriname, 1 algemeen, herhaal
+    const pool=[],srcs=[fam,sur,gen];
+    let i=0;
+    while(pool.length<n&&srcs.some(s=>s.length>0)){
+      const s=srcs[i%3];if(s.length>0)pool.push(s.shift());i++;
+    }
+    return pool;
   }
   gameQs=[...shuffle(pick('easy',5)),...shuffle(pick('medium',5)),...shuffle(pick('hard',5))];
   currentQ=0;safeAmt=0;selAns=-1;llUsed={};sessionAchs=[];usedNoLL=true;answFast=false;
