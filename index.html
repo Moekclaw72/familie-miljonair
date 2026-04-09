@@ -765,6 +765,26 @@ const QS=[
   {q:'Wat is de verjaardag van Shira?',o:['26-06-2017','21-04-2015','29-12-2022','04-04-2020'],c:1,d:'hard'},
   {q:'Wat is de verjaardag van Amaya?',o:['26-06-2017','21-04-2015','29-12-2022','04-04-2020'],c:2,d:'hard'},
   {q:'Welk karakter beschrijft Daan het best?',o:['Luidruchtig en grappig','Stil en sportschoolfiguur','Druk en energiek','Muzikaal en creatief'],c:1,d:'hard'},
+  // FAMILIE — NIEUW (uit de chats gescand)
+  {q:'Op welke datum stopten Jennifer én Berry samen met roken?',o:['1 januari 2025','1 oktober 2025','1 april 2025','1 juli 2025'],c:1,d:'easy'},
+  {q:'Hoe oud werd Ervinna op haar verjaardag in oktober 2025?',o:['45 jaar','48 jaar','50 jaar','55 jaar'],c:2,d:'easy'},
+  {q:'Wat maakt Loek het allerbeste volgens de familie?',o:['Roti','Oliebollen','Gehaktballen','Pom'],c:2,d:'easy'},
+  {q:'Hoe heet het dochtertje van Armando en Sindy?',o:['Naleya','Shira','Amaya','Bella'],c:2,d:'easy'},
+  {q:'Wie wordt in de familiechat ook wel "Sjenni" of "Sjennie" genoemd?',o:['Richella','Jennifer','Kawita','Ervinna'],c:1,d:'easy'},
+  {q:'Hoe heet Gaby in de familiechat als bijnaam?',o:['Gab','Gabs','Gabby','G'],c:1,d:'easy'},
+  {q:'Op welke datum vieren Moek en Kawita hun trouwdag?',o:['14 februari','31 januari','25 december','1 april'],c:1,d:'medium'},
+  {q:'Hoeveel jaar huwelijk vierden Moek en Kawita op 31 januari 2026?',o:['5 jaar','8 jaar','10 jaar','12 jaar'],c:2,d:'medium'},
+  {q:'Wat zag Chella in de kerstboomvideo op Oud en Nieuw 2026?',o:['Een ster','Een kerstman','Een gezicht','Een engel'],c:2,d:'medium'},
+  {q:'Wie zei: "ik werk als een paard, maar verdien als een ezel"?',o:['Geetha','Chella','Jennifer','Kawita'],c:2,d:'medium'},
+  {q:'Hoe lang was Loek al gestopt met roken in oktober 2025?',o:['1 jaar','2 jaar','3 jaar','5 jaar'],c:2,d:'medium'},
+  {q:'Wanneer is de verjaardag van Geetha?',o:['1 januari','8 oktober','14 november','31 januari'],c:1,d:'medium'},
+  {q:'Wat deed Geetha op Oud en Nieuw naast het straatje spelen?',o:['Ze danste de hele nacht','Ze at een hele doos bonbons op','Ze stak vuurwerk af','Ze keek een film'],c:1,d:'medium'},
+  {q:'Op welke datum hebben ZOWEL Daan als Richella hun verjaardag?',o:['8 oktober','31 januari','14 november','25 december'],c:2,d:'hard'},
+  {q:'Hoeveel euro betaalt Chella elke keer voor parkeren bij het ziekenhuis?',o:['5 euro','10 euro','15 euro','20 euro'],c:2,d:'hard'},
+  {q:'Wie werd op 31 januari 2026 precies 20 jaar?',o:['Devan','Naleya','Duncan','Shira'],c:2,d:'hard'},
+  {q:'Op welke datum zou de moeder van Loek 102 jaar zijn geworden?',o:['1 januari','6 januari','8 oktober','14 november'],c:1,d:'hard'},
+  {q:'Hoeveel berichten stuurde Geetha totaal in de familiechat?',o:['157','224','307','428'],c:2,d:'hard'},
+  {q:'Hoeveel berichten stuurde Berry totaal in de familiechat?',o:['80','123','224','307'],c:1,d:'hard'},
   // SURINAAMS
   {q:'Wat is de hoofdstad van Suriname?',o:['Cayenne','Paramaribo','Georgetown','Bridgetown'],c:1,d:'easy'},
   {q:'Wanneer werd Suriname onafhankelijk?',o:['25-11-1975','01-01-1980','15-08-1945','04-07-1960'],c:0,d:'easy'},
@@ -851,7 +871,7 @@ const QS=[
   {q:'Hoe heet het grote Centrale reservaat in Suriname?',o:['Amazonewoud','Centraal Suriname Natuurreservaat','Groene Longwoud','Moengo Reservaat'],c:1,d:'hard'},
 ];
 // Tag questions by category (family=0, Suriname=1, general=2)
-QS.forEach((q,i)=>{q.cat=i<38?0:i<73?1:2;});
+QS.forEach((q,i)=>{q.cat=i<57?0:i<92?1:2;});
 
 // ══════════════════════════════════════════════════════
 //  CHAT STATS DATA (hardcoded from analysis)
@@ -867,14 +887,20 @@ const CHAT_STATS={
   totalMsgs:1987,
   groupCreated:'07-11-2019 door Jennifer (Sjenni)',
   funFacts:[
-    '💬 Chella stuurt de MEESTE berichten: 458!',
-    '🌅 G Jagroep (Geetha) stuurde als eerste ooit "Gm..." in de chat',
+    '💬 Chella stuurt de MEESTE berichten in de chat: 458!',
+    '🌅 Geetha stuurde als eerste ooit "Gm..." in de familiechat',
     '📱 De familiechat is aangemaakt op 07-11-2019 door Jennifer (Sjenni)',
-    '🏆 Top 3: Chella (458) · Sjenni (428) · Geetha (307)',
+    '🏆 Top 3 berichten: Chella (458) · Sjenni (428) · Geetha (307)',
     '💰 Geetha verloor 250 euro bij het straatje op Oud en Nieuw 2026',
-    '🍩 Geetha at op oud en nieuw een hele doos bonbons op',
-    '🏋️ Loek maakt de beste gehaktballen én oliebollen',
-    '😂 Chella heeft altijd honger en is altijd ziek het lijkt wel',
+    '🍩 Geetha at op Oud en Nieuw een hele doos bonbons op!',
+    '🥩 Loek maakt de allerlekkerste gehaktballen van de familie',
+    '🚭 Jennifer én Berry stopten samen met roken op 1 oktober 2025',
+    '👑 Moek & Kawita vierden 10 jaar huwelijk op 31 januari 2026',
+    '🌨️ In januari 2026 lag er sneeuw in heel Nederland — kinderen hadden ijsvrij!',
+    '😮 Chella zag een gezicht in de kerstboom op Oud en Nieuw 2026',
+    '🎂 Daan en Richella hebben ALLEBEI hun verjaardag op 14 november!',
+    '🚗 Loek was al 3 jaar gestopt met roken in oktober 2025',
+    '👶 Amaya (dochtertje van Armando) zag voor het eerst sneeuw met grote ogen',
   ],
 };
 
