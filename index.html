@@ -11,7 +11,7 @@ html,body{height:100%;overflow:hidden;margin:0;padding:0}
 body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--deep);color:var(--text)}
 
 /* SCREENS — fixed viewport, padded below address bar */
-.screen{display:none;position:fixed;top:var(--screen-top,0px);left:0;right:0;height:var(--screen-height,100vh);flex-direction:column;overflow:hidden;padding-top:env(safe-area-inset-top,0)}
+.screen{display:none;position:fixed;top:var(--screen-top,0px);left:0;right:0;height:var(--screen-height,100vh);flex-direction:column;overflow:hidden;padding-top:max(env(safe-area-inset-top,0px),12px)}
 .screen.active{display:flex}
 /* Scrollable screens need overflow-y */
 #s-lb.active,#s-ach.active,#s-stats.active,#s-intro.active{overflow-y:auto}
