@@ -132,7 +132,8 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--deep);color:va
 .ab.ok .abl{background:var(--green);border-color:var(--green);color:white}
 .ab.bad{border-color:var(--red);background:linear-gradient(180deg,rgba(80,0,0,.9),rgba(45,0,0,.9));box-shadow:0 0 16px rgba(239,68,68,.3)}
 .ab.bad .abl{background:var(--red);border-color:var(--red);color:white}
-.ab.hid{opacity:.12;pointer-events:none}
+.ab.hid{opacity:.5;pointer-events:none;border-color:rgba(239,68,68,.6)!important;background:linear-gradient(180deg,rgba(80,0,0,.85),rgba(40,0,0,.85))!important}
+.ab.hid .abl{background:var(--red)!important;border-color:var(--red)!important;color:white!important}
 .ab.dis{cursor:default}
 @keyframes pulseGreen{0%,100%{box-shadow:0 0 0 rgba(34,197,94,0)}50%{box-shadow:0 0 18px rgba(34,197,94,.5)}}
 
@@ -1384,7 +1385,14 @@ function use5050(){
   document.getElementById('ll0').classList.add('used');
   const q=gameQs[currentQ];
   const w=shuffle([0,1,2,3].filter(i=>i!==q.c));
-  w.slice(0,2).forEach(i=>{const b=document.getElementById(`a${i}`);if(b)b.classList.add('hid');});
+  w.slice(0,2).forEach(i=>{
+    const b=document.getElementById(`a${i}`);
+    if(b){
+      b.classList.add('hid');
+      const lbl=b.querySelector('.abl');
+      if(lbl)lbl.textContent='❌';
+    }
+  });
 }
 function useBel(){
   if(llUsed.bel)return;snd('lifeline');llUsed.bel=true;usedNoLL=false;
