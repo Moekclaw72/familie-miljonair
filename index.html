@@ -11,7 +11,7 @@ html,body{height:100%;overflow:hidden;margin:0;padding:0}
 body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--deep);color:var(--text)}
 
 /* SCREENS — fixed viewport, padded below address bar */
-.screen{display:none;position:fixed;top:0;left:0;right:0;bottom:0;flex-direction:column;overflow:hidden;padding-top:env(safe-area-inset-top,0)}
+.screen{display:none;position:fixed;top:var(--screen-top,0px);left:0;right:0;height:var(--screen-height,100vh);flex-direction:column;overflow:hidden;padding-top:env(safe-area-inset-top,0)}
 .screen.active{display:flex}
 /* Scrollable screens need overflow-y */
 #s-lb.active,#s-ach.active,#s-stats.active,#s-intro.active{overflow-y:auto}
@@ -109,14 +109,14 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--deep);color:va
 .ll-label{font-size:.45rem;font-weight:700;color:var(--muted);text-align:center;margin-top:-6px;letter-spacing:.5px;text-transform:uppercase}
 
 /* CENTER: Answers on top, Question on bottom (like the real show) */
-.q-col{flex:1;display:flex;flex-direction:column-reverse;gap:7px;overflow:hidden;min-width:0;padding-bottom:4px}
+.q-col{flex:1;display:flex;flex-direction:column;gap:7px;overflow:hidden;min-width:0;padding-bottom:4px}
 
 /* Question panel — WWTBM style with rim glow */
 .qcard{background:linear-gradient(160deg,rgba(20,32,120,.97),rgba(9,14,62,.97));border:2px solid rgba(80,130,255,.4);border-radius:20px;padding:16px 14px;text-align:center;font-size:clamp(.82rem,3.2vw,1.05rem);font-weight:600;line-height:1.5;color:#eef4ff;box-shadow:0 0 0 1px rgba(40,80,255,.15),0 0 40px rgba(30,80,255,.28),0 0 80px rgba(20,60,220,.12),inset 0 1px 0 rgba(255,255,255,.09);animation:slideIn .4s cubic-bezier(.34,1.56,.64,1);flex-shrink:0}
 @keyframes slideIn{from{transform:translateY(-14px) scale(.96);opacity:0}to{transform:translateY(0) scale(1);opacity:1}}
 
 /* 2×2 answer grid */
-.answers{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.answers{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:6px;flex:1;min-height:0}
 /* WWTBM pill-shaped answer buttons */
 .ab{background:linear-gradient(180deg,rgba(255,255,255,.07) 0%,transparent 35%),linear-gradient(135deg,rgba(18,30,115,.97),rgba(8,12,60,.97));border:1.5px solid rgba(60,100,220,.45);border-radius:12px;padding:6px 8px;cursor:pointer;display:flex;align-items:center;gap:6px;font-size:clamp(.62rem,2.2vw,.82rem);font-weight:600;color:#ddeaff;line-height:1.2;transition:all .15s;box-shadow:inset 0 1px 0 rgba(255,255,255,.09),0 3px 12px rgba(0,0,40,.6);animation:fadeUp .35s ease both;min-height:40px;position:relative;word-break:break-word;hyphens:auto}
 .ab::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.04),transparent);pointer-events:none}
@@ -330,10 +330,10 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--deep);color:va
       <button class="ll" id="ll2" onclick="usePub()">👥</button>
     </div>
 
-    <!-- CENTER: Question + Answers -->
+    <!-- CENTER: Answers top, Question bottom -->
     <div class="q-col">
-      <div class="qcard" id="g-q">–</div>
       <div class="answers" id="g-ans"></div>
+      <div class="qcard" id="g-q">–</div>
     </div>
 
     <!-- RIGHT: Money ladder -->
@@ -1137,9 +1137,20 @@ function loadProfile(){
 // Load saved name on startup
 document.addEventListener('DOMContentLoaded',loadProfile);
 
-// Fix mobile viewport height (address bar issue)
-function fixVH(){document.documentElement.style.setProperty('--vh',window.innerHeight+'px');}
-fixVH();window.addEventListener('resize',fixVH);
+// Fix mobile viewport height — uses visualViewport to exclude address bar
+function fixVH(){
+  const vv=window.visualViewport;
+  if(vv){
+    document.documentElement.style.setProperty('--screen-height',vv.height+'px');
+    document.documentElement.style.setProperty('--screen-top',vv.offsetTop+'px');
+  }else{
+    document.documentElement.style.setProperty('--screen-height',window.innerHeight+'px');
+    document.documentElement.style.setProperty('--screen-top','0px');
+  }
+}
+fixVH();
+if(window.visualViewport){window.visualViewport.addEventListener('resize',fixVH);window.visualViewport.addEventListener('scroll',fixVH);}
+window.addEventListener('resize',fixVH);
 // Also try immediately in case DOM is already ready
 if(document.readyState!=='loading')loadProfile();
 
