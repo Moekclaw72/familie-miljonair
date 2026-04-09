@@ -313,6 +313,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--deep);color:va
     <button class="btn-nav" onclick="goAch()">🎖 Achievements</button>
     <button class="btn-nav" onclick="goStats()">📊 Stats</button>
   </div>
+  <button style="background:none;border:none;color:var(--muted);font-size:.65rem;cursor:pointer;margin-top:6px;text-decoration:underline" onclick="resetAll()">🗑️ Reset ranglijst &amp; achievements</button>
 </div>
 
 <!-- ═══ NAME ═══ -->
@@ -625,6 +626,7 @@ function saveLB(name,img,prize){
 //  HELPERS
 // ══════════════════════════════════════════════════════
 function fmtM(v){return'👑 '+v.toLocaleString('nl-NL');}
+function resetAll(){if(confirm('Weet je het zeker? Ranglijst + achievements worden gewist!')){localStorage.removeItem('fm_lb');localStorage.removeItem('fm_ach');localStorage.removeItem('fm_profile');alert('✅ Alles is gereset! Succes met het nieuwe seizoen 👑');location.reload();}}
 function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
 function go(id){snd('click');document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');}
 function esc(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
