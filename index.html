@@ -156,6 +156,33 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--deep);color:va
 .btn-walk{background:transparent;border:1px solid rgba(255,80,80,.3);color:rgba(255,130,130,.7);padding:5px 12px;border-radius:18px;cursor:pointer;font-size:.65rem;font-weight:600;transition:all .2s}
 .btn-walk:hover{border-color:var(--red);color:var(--red)}
 
+/* ── TRASH TALK BUBBLE — schuift van rechts ── */
+#trash-bubble{position:fixed;top:92px;right:-310px;width:min(82%,275px);background:linear-gradient(135deg,rgba(12,4,35,.97),rgba(6,2,20,.97));border:1.5px solid rgba(240,192,64,.45);border-radius:14px;padding:9px 12px;display:flex;align-items:center;gap:10px;z-index:30;transition:right .45s cubic-bezier(.34,1.56,.64,1);box-shadow:0 4px 24px rgba(0,0,0,.7),0 0 14px rgba(240,192,64,.12);pointer-events:none}
+#trash-bubble.show{right:8px}
+.tb-avatar{width:36px;height:46px;object-fit:cover;object-position:top;border-radius:8px;border:1.5px solid var(--gold);flex-shrink:0}
+.tb-content{flex:1;min-width:0}
+.tb-crown{font-size:.55rem;color:var(--gold);font-weight:900;text-transform:uppercase;letter-spacing:1px;margin-bottom:1px}
+.tb-name{font-size:.65rem;font-weight:800;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tb-msg{font-size:.7rem;font-style:italic;color:#c8d8ff;line-height:1.3;margin-top:2px}
+
+/* ── MINI LEADERBOARD MODAL ── */
+#mini-lb{position:fixed;inset:0;z-index:60;background:rgba(0,0,15,.92);backdrop-filter:blur(6px);display:none;align-items:center;justify-content:center;padding:16px}
+#mini-lb.open{display:flex}
+.mlb-card{background:linear-gradient(160deg,#0d2040,#060f20);border:1.5px solid rgba(240,192,64,.4);border-radius:20px;padding:18px;width:100%;max-width:340px;max-height:75vh;display:flex;flex-direction:column;box-shadow:0 0 50px rgba(240,192,64,.15);animation:mIn .3s cubic-bezier(.34,1.56,.64,1)}
+.mlb-title{font-size:1rem;color:var(--gold);font-weight:900;text-align:center;margin-bottom:12px;letter-spacing:1px}
+.mlb-list{overflow-y:auto;flex:1;display:flex;flex-direction:column;gap:6px}
+.mlb-row{display:flex;align-items:center;gap:10px;padding:7px 8px;border-radius:10px;background:rgba(255,255,255,.04)}
+.mlb-row.you{background:rgba(240,192,64,.1);border:1px solid rgba(240,192,64,.25)}
+.mlb-rank{font-size:1.1rem;width:26px;text-align:center;flex-shrink:0}
+.mlb-img{width:34px;height:43px;object-fit:cover;object-position:top;border-radius:7px;flex-shrink:0;background:rgba(255,255,255,.1)}
+.mlb-info{flex:1;min-width:0}
+.mlb-pname{font-size:.8rem;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mlb-date{font-size:.58rem;color:var(--muted)}
+.mlb-score{font-size:.88rem;font-weight:900;color:var(--gold);flex-shrink:0}
+.mlb-empty{text-align:center;color:var(--muted);padding:24px;font-size:.85rem;line-height:1.8}
+.btn-lb{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);color:var(--text);padding:4px 9px;border-radius:14px;cursor:pointer;font-size:.65rem;font-weight:700;transition:all .2s;flex-shrink:0}
+.btn-lb:hover{border-color:var(--gold);color:var(--gold)}
+
 /* DANGER POPUP */
 #danger-pop{position:fixed;top:0;left:0;right:0;pointer-events:none;z-index:999;display:flex;justify-content:center;padding-top:60px;opacity:0;transition:opacity .2s}
 #danger-pop.show{opacity:1}
@@ -349,6 +376,26 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--deep);color:va
     <div class="safebadge" id="safebadge" style="visibility:hidden">🔒 Veilig: 👑 0</div>
     <button class="btn-walk" id="walkbtn" onclick="tryWalk()" style="display:none">Stoppen (👑 <span id="walkami">0</span>)</button>
     <button id="killbtn" onclick="openKill()" style="display:none;background:rgba(220,38,38,.12);border:1px solid rgba(220,38,38,.35);color:#fca5a5;padding:4px 10px;border-radius:16px;cursor:pointer;font-size:.65rem;font-weight:700">💀 Elimineer!</button>
+    <button class="btn-lb" onclick="showMiniLB()">🏆 Ranglijst</button>
+  </div>
+
+  <!-- Trash talk bubble (buiten game-main, fixed) -->
+  <div id="trash-bubble">
+    <img class="tb-avatar" id="tb-avatar" src="" alt="" onerror="this.style.display='none'">
+    <div class="tb-content">
+      <div class="tb-crown">👑 King / Queen</div>
+      <div class="tb-name" id="tb-name">–</div>
+      <div class="tb-msg" id="tb-msg">"..."</div>
+    </div>
+  </div>
+
+  <!-- Mini leaderboard modal -->
+  <div id="mini-lb">
+    <div class="mlb-card">
+      <div class="mlb-title">👑 Ranglijst</div>
+      <div class="mlb-list" id="mlb-list"></div>
+      <button class="btn-g" onclick="closeMiniLB()" style="margin-top:12px;padding:11px">✕ Sluiten &amp; verder spelen</button>
+    </div>
   </div>
 
   <!-- Confirm modal -->
@@ -556,6 +603,74 @@ function fmtM(v){return'👑 '+v.toLocaleString('nl-NL');}
 function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
 function go(id){snd('click');document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');}
 function esc(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+
+// ══════════════════════════════════════════════════════
+//  TRASH TALK — #1 van de ranglijst pest je tijdens het spel
+// ══════════════════════════════════════════════════════
+const TRASH=[
+  'Dit weet jij echt niet hoor! 😂',
+  'Makkelijk... voor mij was dit! 👑',
+  'Ik had dit in 3 seconden! ⚡',
+  'Mijn record klopt niemand — niemand! 💪',
+  'Weet je het zeker? Ik twijfelde ook... 😏',
+  'Haha kom maar op! Ik ben onverslaanbaar 😈',
+  'Ga je stoppen? Slim misschien... 😂',
+  'Dit deed ik met mijn ogen dicht! 🙈',
+  'Jij wordt NOOIT King of Queen! 👑',
+  'Succes hoor! Je hebt het nodig... 😂',
+  'Oooh spannend! Voor jou dan 😄',
+  'Foute gok! Nee wacht... of toch? 😏',
+  'Tip: ik gok nooit — ik wéét het! 🧠',
+  'Ik keek niet eens op de klok! ⏱️',
+  'Dat is fout! Nee wacht... toch niet? 😜',
+];
+let _trashTimer=null;
+function showTrashTalk(){
+  const lb=loadLB();
+  if(!lb.length)return;
+  const king=lb[0];
+  if(king.name===playerName)return; // niet jezelf pesten
+  if(Math.random()>0.6)return; // 60% kans per vraag
+  const msg=TRASH[Math.floor(Math.random()*TRASH.length)];
+  const img=document.getElementById('tb-avatar');
+  img.src=king.img||'';
+  img.style.display=king.img?'block':'none';
+  document.getElementById('tb-name').textContent=king.name;
+  document.getElementById('tb-msg').textContent='"'+msg+'"';
+  const b=document.getElementById('trash-bubble');
+  b.classList.add('show');
+  clearTimeout(_trashTimer);
+  _trashTimer=setTimeout(()=>b.classList.remove('show'),4500);
+}
+function hideTrashTalk(){
+  clearTimeout(_trashTimer);
+  document.getElementById('trash-bubble').classList.remove('show');
+}
+
+// ══════════════════════════════════════════════════════
+//  MINI LEADERBOARD IN GAME
+// ══════════════════════════════════════════════════════
+function showMiniLB(){
+  const lb=loadLB();
+  const ranks=['👑','🥈','🥉','4️⃣','5️⃣'];
+  const list=document.getElementById('mlb-list');
+  if(!lb.length){
+    list.innerHTML='<div class="mlb-empty">Nog geen spelers op de ranglijst.<br>Jij kunt de eerste King/Queen worden! 👑</div>';
+  } else {
+    list.innerHTML=lb.map((e,i)=>`
+      <div class="mlb-row${e.name===playerName?' you':''}">
+        <div class="mlb-rank">${ranks[i]||'#'+(i+1)}</div>
+        <img class="mlb-img" src="${esc(e.img)}" onerror="this.style.display='none'" alt="">
+        <div class="mlb-info">
+          <div class="mlb-pname">${i===0?'👑 ':''}${esc(e.name)}${e.name===playerName?' (jij)':''}</div>
+          <div class="mlb-date">${esc(e.date)}</div>
+        </div>
+        <div class="mlb-score">${fmtM(e.prize)}</div>
+      </div>`).join('');
+  }
+  document.getElementById('mini-lb').classList.add('open');
+}
+function closeMiniLB(){document.getElementById('mini-lb').classList.remove('open');}
 
 // ══════════════════════════════════════════════════════
 //  CHARACTERS
@@ -971,6 +1086,8 @@ function loadQ(){
   // Show kill button only at last question
   document.getElementById('killbtn').style.display=currentQ===14?'block':'none';
   updateLdr();startTimer();startTension();setEmotion('idle');
+  // Trash talk van de #1 — na 2 seconden insturen
+  setTimeout(showTrashTalk, 2000);
 }
 
 // ══════════════════════════════════════════════════════
@@ -989,7 +1106,7 @@ function pickAns(idx){
 function cancelAns(){snd('click');setEmotion('idle');document.getElementById('m-conf').style.display='none';document.querySelectorAll('.ab').forEach(b=>b.classList.remove('sel'));selAns=-1;}
 function confirmAns(){
   document.getElementById('m-conf').style.display='none';
-  clearTimer();stopTension();hideDanger();
+  clearTimer();stopTension();hideDanger();hideTrashTalk();
   const q=gameQs[currentQ];
   revealAns(q.c,selAns);
   if(selAns===q.c){
