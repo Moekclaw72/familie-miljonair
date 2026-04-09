@@ -262,8 +262,8 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--deep);color:va
 <div id="s-intro" class="screen active">
   <span class="logo-crown">👑</span>
   <h1 class="logo-title">Family<br>Miljonairs</h1>
-  <p class="logo-sub">De ultieme familiequiz</p>
-  <div class="intro-prize"><small>Hoofdprijs</small>€1.000.000</div>
+  <p class="logo-sub">Wie wordt de King of Queen?</p>
+  <div class="intro-prize"><small>Hoogste prijs</small>👑 1.000.000 Kronen</div>
   <button class="btn-play" onclick="goName()">▶ SPEEL NU</button>
   <div class="intro-nav">
     <button class="btn-nav" onclick="goLB()">🏆 Ranglijst</button>
@@ -311,8 +311,8 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--deep);color:va
       </div>
     </div>
     <div class="prize-chip">
-      <small class="lbl">Te winnen</small>
-      <span class="amt" id="g-prize">€100</span>
+      <small class="lbl">👑 Te winnen</small>
+      <span class="amt" id="g-prize">👑 100</span>
     </div>
   </div>
 
@@ -346,8 +346,8 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--deep);color:va
 
   <!-- Footer -->
   <div class="gfoot">
-    <div class="safebadge" id="safebadge" style="visibility:hidden">🔒 Veilig: €0</div>
-    <button class="btn-walk" id="walkbtn" onclick="tryWalk()" style="display:none">Stoppen (€<span id="walkami">0</span>)</button>
+    <div class="safebadge" id="safebadge" style="visibility:hidden">🔒 Veilig: 👑 0</div>
+    <button class="btn-walk" id="walkbtn" onclick="tryWalk()" style="display:none">Stoppen (👑 <span id="walkami">0</span>)</button>
     <button id="killbtn" onclick="openKill()" style="display:none;background:rgba(220,38,38,.12);border:1px solid rgba(220,38,38,.35);color:#fca5a5;padding:4px 10px;border-radius:16px;cursor:pointer;font-size:.65rem;font-weight:700">💀 Elimineer!</button>
   </div>
 
@@ -500,9 +500,9 @@ function setEmotion(state){
 //  ACHIEVEMENTS
 // ══════════════════════════════════════════════════════
 const ACHS=[
-  {id:'miljonair', icon:'💎',name:'Miljonair!',         desc:'Win €1.000.000'},
-  {id:'halfmil',   icon:'💰',name:'Half miljoen',       desc:'Bereik €500.000'},
-  {id:'king',      icon:'👑',name:'King of the Hill',   desc:'Sta #1 op de ranglijst'},
+  {id:'miljonair', icon:'💎',name:'Kronen Koning!',      desc:'Win 👑 1.000.000 Kronen'},
+  {id:'halfmil',   icon:'💰',name:'Half miljoen',       desc:'Bereik 👑 500.000 Kronen'},
+  {id:'king',      icon:'👑',name:'King of Queen',      desc:'Sta #1 op de ranglijst'},
   {id:'nolives',   icon:'🧠',name:'Brainiac',           desc:'Win zonder lifelines'},
   {id:'fast',      icon:'⚡',name:'Bliksemsnelle denker',desc:'Antwoord in <5 seconden'},
   {id:'safe',      icon:'🔒',name:'Veilige speler',     desc:'Bereik beide veilige bedragen'},
@@ -552,7 +552,7 @@ function saveLB(name,img,prize){
 // ══════════════════════════════════════════════════════
 //  HELPERS
 // ══════════════════════════════════════════════════════
-function fmtM(v){return'€'+v.toLocaleString('nl-NL');}
+function fmtM(v){return'👑 '+v.toLocaleString('nl-NL');}
 function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
 function go(id){snd('click');document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');}
 function esc(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
@@ -599,11 +599,11 @@ const BEL={
 //  LADDER
 // ══════════════════════════════════════════════════════
 const LADDER=[
-  {v:100,l:'€100'},{v:200,l:'€200'},{v:300,l:'€300'},{v:500,l:'€500'},
-  {v:1000,l:'€1.000',s:true},{v:2000,l:'€2.000'},{v:4000,l:'€4.000'},
-  {v:8000,l:'€8.000'},{v:16000,l:'€16.000'},{v:32000,l:'€32.000',s:true},
-  {v:64000,l:'€64.000'},{v:125000,l:'€125.000'},{v:250000,l:'€250.000'},
-  {v:500000,l:'€500.000'},{v:1000000,l:'€1.000.000'},
+  {v:100,l:'👑100'},{v:200,l:'👑200'},{v:300,l:'👑300'},{v:500,l:'👑500'},
+  {v:1000,l:'👑1.000',s:true},{v:2000,l:'👑2.000'},{v:4000,l:'👑4.000'},
+  {v:8000,l:'👑8.000'},{v:16000,l:'👑16.000'},{v:32000,l:'👑32.000',s:true},
+  {v:64000,l:'👑64.000'},{v:125000,l:'👑125.000'},{v:250000,l:'👑250.000'},
+  {v:500000,l:'👑500.000'},{v:1000000,l:'👑1.000.000'},
 ];
 
 // ══════════════════════════════════════════════════════
@@ -633,7 +633,7 @@ const QS=[
   {q:'Wie stuurt als DERDE de meeste berichten in de chat?',o:['Geetha','Jennifer/Sjenni','Chella','Gaby'],c:0,d:'hard'},
   {q:'Op welke datum is de familie WhatsApp-groep aangemaakt?',o:['07-11-2019','01-01-2020','25-12-2018','14-02-2020'],c:0,d:'medium'},
   // FAMILIE MEDIUM
-  {q:'Hoeveel euro verloor Geetha op Oud en Nieuw bij het straatje?',o:['€100','€150','€250','€500'],c:2,d:'medium'},
+  {q:'Hoeveel verloor Geetha op Oud en Nieuw bij het straatje?',o:['100','150','250','500'],c:2,d:'medium'},
   {q:'Wie heeft Geetha een nieuw eenpersoonsbed gegeven?',o:['Roy','Berry','Loek','Daan'],c:2,d:'medium'},
   {q:'Wat voor tattoo heeft Moek?',o:['Arm','Borst','Nek','Rug'],c:2,d:'medium'},
   {q:'Wie is de ex-vrouw van Roy?',o:['Ervina','Geetha','Kawita','Sindy'],c:1,d:'medium'},
@@ -756,7 +756,7 @@ const CHAT_STATS={
     '🌅 G Jagroep (Geetha) stuurde als eerste ooit "Gm..." in de chat',
     '📱 De familiechat is aangemaakt op 07-11-2019 door Jennifer (Sjenni)',
     '🏆 Top 3: Chella (458) · Sjenni (428) · Geetha (307)',
-    '💰 Geetha verloor €250 bij het straatje op Oud en Nieuw 2026',
+    '💰 Geetha verloor 250 euro bij het straatje op Oud en Nieuw 2026',
     '🍩 Geetha at op oud en nieuw een hele doos bonbons op',
     '🏋️ Loek maakt de beste gehaktballen én oliebollen',
     '😂 Chella heeft altijd honger en is altijd ziek het lijkt wel',
@@ -785,8 +785,8 @@ function goLB(){
   const lb=loadLB();
   const list=document.getElementById('lb-list');
   const ranks=['👑','🥈','🥉','4️⃣','5️⃣'];
-  if(!lb.length){list.innerHTML='<div class="lb-empty">Nog geen spelers.<br>Wees de eerste miljonair! 🎰<br><br>Veel succes! 💪</div>';}
-  else{list.innerHTML=lb.map((e,i)=>`<div class="lbc"><div class="lbc-rank">${ranks[i]||i+1}</div><img src="${esc(e.img)}" onerror="this.style.display='none'" alt=""><div class="lbc-info"><div class="lbc-name">${i===0?'<b>👑 King '+esc(e.name)+'</b>':esc(e.name)}</div><div class="lbc-sub">${esc(e.date)}</div></div><div class="lbc-score">${fmtM(e.prize)}<small>${i===0?'KING':'#'+(i+1)}</small></div></div>`).join('');}
+  if(!lb.length){list.innerHTML='<div class="lb-empty">Nog geen spelers.<br>Wie wordt de King of Queen? 👑<br><br>Veel succes! 💪</div>';}
+  else{list.innerHTML=lb.map((e,i)=>`<div class="lbc"><div class="lbc-rank">${ranks[i]||i+1}</div><img src="${esc(e.img)}" onerror="this.style.display='none'" alt=""><div class="lbc-info"><div class="lbc-name">${i===0?'<b>👑 King/Queen '+esc(e.name)+'</b>':esc(e.name)}</div><div class="lbc-sub">${esc(e.date)}</div></div><div class="lbc-score">${fmtM(e.prize)}<small>${i===0?'KING/QUEEN':'#'+(i+1)}</small></div></div>`).join('');}
   go('s-lb');
 }
 function goAch(){
@@ -901,7 +901,7 @@ function updateLdr(){
     d.textContent=item.l;
     col.appendChild(d);
   }
-  document.getElementById('g-prize').textContent=currentQ<15?LADDER[currentQ].l:'€1.000.000';
+  document.getElementById('g-prize').textContent=currentQ<15?LADDER[currentQ].l:'👑1.000.000';
   document.getElementById('g-qn').textContent=currentQ+1;
   if(safeAmt>0){
     document.getElementById('safebadge').style.visibility='visible';
@@ -1070,7 +1070,7 @@ function endGame(won){
     if(usedNoLL)grantAch('nolives');
     if(currentQ>=10)grantAch('safe');
     snd('victory');launchConfetti(120);
-    endGameWith(1000000,'👑','MILJONAIR!',`${playerName} heeft het gedaan!! De hele familie is trots! 🎊🎊🎊`);
+    endGameWith(1000000,'👑','KING OF QUEEN!',`${playerName} heeft het gedaan!! De hele familie is trots! 🎊🎊🎊`);
   }else{
     const p=safeAmt;
     if(currentQ>=10)grantAch('safe');
