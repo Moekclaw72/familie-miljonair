@@ -98,28 +98,28 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--deep);color:va
 @keyframes tbar-pulse{0%,100%{opacity:1}50%{opacity:.5}}
 .tbar-num{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:.85rem;font-weight:900;color:#fff;z-index:2;pointer-events:none;text-shadow:0 1px 6px rgba(0,0,0,.9),0 0 12px rgba(0,0,0,.5)}
 
-/* ── MAIN 3-COLUMN GAME LAYOUT ── */
-.game-main{flex:1;display:flex;overflow:hidden;padding:4px;gap:4px;min-height:0}
+/* ── WWTBM GAME LAYOUT — vertical, full width ── */
+.game-main{flex:1;display:flex;flex-direction:column;overflow:hidden;padding:0 10px;gap:0;min-height:0}
 
-/* LEFT: Lifelines */
-.ll-col{display:flex;flex-direction:column;justify-content:flex-start;align-items:center;gap:8px;width:50px;flex-shrink:0;padding-top:4px}
-.ll{width:46px;height:46px;border-radius:50%;background:radial-gradient(circle at 40% 35%,rgba(40,70,200,.9),rgba(10,20,80,.95));border:2px solid rgba(80,130,255,.55);color:white;font-size:1.25rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;box-shadow:0 0 14px rgba(60,100,255,.3),inset 0 1px 0 rgba(255,255,255,.15);position:relative;flex-shrink:0}
+/* Lifelines — horizontal row */
+.ll-col{display:flex;flex-direction:row;justify-content:center;align-items:center;gap:14px;flex-shrink:0;padding:6px 0}
+.ll{width:40px;height:40px;border-radius:50%;background:radial-gradient(circle at 40% 35%,rgba(40,70,200,.9),rgba(10,20,80,.95));border:2px solid rgba(80,130,255,.55);color:white;font-size:1.1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;box-shadow:0 0 14px rgba(60,100,255,.3),inset 0 1px 0 rgba(255,255,255,.15);position:relative;flex-shrink:0}
 .ll:hover:not(.used){border-color:var(--gold);box-shadow:0 0 20px rgba(240,192,64,.4)}
 .ll.used{opacity:.2;filter:grayscale(1);cursor:not-allowed}
-.ll-label{font-size:.45rem;font-weight:700;color:var(--muted);text-align:center;margin-top:-6px;letter-spacing:.5px;text-transform:uppercase}
+.ll-label{display:none}
 
-/* CENTER: Answers on top, Question on bottom (like the real show) */
-.q-col{flex:1;display:flex;flex-direction:column;justify-content:center;gap:10px;overflow:hidden;min-width:0;padding:4px 0}
+/* Q+A area — centered vertically */
+.q-col{flex:1;display:flex;flex-direction:column;justify-content:center;gap:10px;overflow:hidden;min-width:0;padding:0}
 
-/* Question panel — WWTBM style with rim glow */
-.qcard{background:linear-gradient(160deg,rgba(20,32,120,.97),rgba(9,14,62,.97));border:2px solid rgba(80,130,255,.4);border-radius:20px;padding:18px 16px;text-align:center;font-size:clamp(1rem,3.8vw,1.2rem);font-weight:600;line-height:1.55;color:#eef4ff;box-shadow:0 0 0 1px rgba(40,80,255,.15),0 0 40px rgba(30,80,255,.28),0 0 80px rgba(20,60,220,.12),inset 0 1px 0 rgba(255,255,255,.09);animation:slideIn .4s cubic-bezier(.34,1.56,.64,1);flex-shrink:0}
+/* Question panel — WWTBM diamond style */
+.qcard{background:linear-gradient(160deg,rgba(20,32,120,.97),rgba(9,14,62,.97));border:2px solid rgba(80,130,255,.4);border-radius:20px;padding:16px 18px;text-align:center;font-size:clamp(.92rem,3.6vw,1.15rem);font-weight:600;line-height:1.5;color:#eef4ff;box-shadow:0 0 0 1px rgba(40,80,255,.15),0 0 40px rgba(30,80,255,.28),0 0 80px rgba(20,60,220,.12),inset 0 1px 0 rgba(255,255,255,.09);animation:slideIn .4s cubic-bezier(.34,1.56,.64,1);flex-shrink:0}
 @keyframes slideIn{from{transform:translateY(-14px) scale(.96);opacity:0}to{transform:translateY(0) scale(1);opacity:1}}
 
-/* 2×2 answer grid */
-.answers{display:grid;grid-template-columns:1fr 1fr;gap:6px}
-/* WWTBM pill-shaped answer buttons */
-.ab{background:linear-gradient(180deg,rgba(255,255,255,.07) 0%,transparent 35%),linear-gradient(135deg,rgba(18,30,115,.97),rgba(8,12,60,.97));border:1.5px solid rgba(60,100,220,.45);border-radius:12px;padding:10px 10px;cursor:pointer;display:flex;align-items:center;gap:8px;font-size:clamp(.68rem,2.4vw,.88rem);font-weight:600;color:#ddeaff;line-height:1.3;transition:all .15s;box-shadow:inset 0 1px 0 rgba(255,255,255,.09),0 3px 12px rgba(0,0,40,.6);animation:fadeUp .35s ease both;min-height:52px;position:relative;word-break:break-word;hyphens:auto}
-.ab::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.04),transparent);pointer-events:none}
+/* 1-column answer list — full width pills */
+.answers{display:flex;flex-direction:column;gap:7px}
+/* WWTBM pill-shaped answer buttons — full width */
+.ab{background:linear-gradient(180deg,rgba(255,255,255,.07) 0%,transparent 35%),linear-gradient(135deg,rgba(18,30,115,.97),rgba(8,12,60,.97));border:1.5px solid rgba(60,100,220,.45);border-radius:26px;padding:12px 16px;cursor:pointer;display:flex;align-items:center;gap:10px;font-size:clamp(.82rem,3vw,.98rem);font-weight:600;color:#ddeaff;line-height:1.3;transition:all .15s;box-shadow:inset 0 1px 0 rgba(255,255,255,.09),0 3px 12px rgba(0,0,40,.6);animation:fadeUp .35s ease both;min-height:44px;position:relative;word-break:break-word;hyphens:auto}
+.ab::before{content:'';position:absolute;inset:0;border-radius:26px;background:linear-gradient(135deg,rgba(255,255,255,.04),transparent);pointer-events:none}
 .ab:nth-child(1){animation-delay:.04s}.ab:nth-child(2){animation-delay:.09s}.ab:nth-child(3){animation-delay:.14s}.ab:nth-child(4){animation-delay:.19s}
 @keyframes fadeUp{from{transform:translateY(12px);opacity:0}to{transform:translateY(0);opacity:1}}
 .abl{background:rgba(60,100,220,.35);border:1px solid rgba(80,130,255,.55);color:rgba(180,215,255,.95);font-weight:900;font-size:.75rem;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s;box-shadow:inset 0 1px 0 rgba(255,255,255,.15)}
@@ -135,15 +135,8 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--deep);color:va
 .ab.dis{cursor:default}
 @keyframes pulseGreen{0%,100%{box-shadow:0 0 0 rgba(34,197,94,0)}50%{box-shadow:0 0 18px rgba(34,197,94,.5)}}
 
-/* RIGHT: Money ladder — always visible, WWTBM style */
-.ldr-col{width:82px;flex-shrink:0;display:flex;flex-direction:column;background:linear-gradient(180deg,rgba(5,5,30,.85),rgba(2,2,18,.92));border:1px solid rgba(40,70,200,.25);border-radius:10px;overflow:hidden;box-shadow:inset 0 0 20px rgba(0,0,40,.5)}
-.ldi{flex:1;display:flex;align-items:center;justify-content:flex-end;padding:0 8px 0 5px;font-size:.58rem;font-weight:700;color:rgba(150,170,220,.5);border-bottom:1px solid rgba(255,255,255,.04);transition:all .25s;white-space:nowrap;position:relative}
-.ldi:last-child{border-bottom:none}
-.ldi.safe{color:#ffd040;background:rgba(240,192,64,.1);font-weight:900;text-shadow:0 0 6px rgba(255,200,0,.5);border-bottom:1px solid rgba(240,192,64,.15)}
-.ldi.cur{background:linear-gradient(90deg,rgba(240,160,0,.06),rgba(240,160,0,.3));color:#ffd040;font-size:.65rem;font-weight:900;border-left:3px solid #ffd040;box-shadow:inset -2px 0 12px rgba(240,180,0,.12);text-shadow:0 0 8px rgba(255,200,0,.6)}
-.ldi.cur::before{content:'▶';position:absolute;left:3px;font-size:.4rem;color:#ffd040}
-.ldi.done{color:rgba(34,197,94,.45)}
-.ldi.safe.done{color:rgba(34,197,94,.6)}
+/* Money ladder — hidden during gameplay, prize shown in header */
+.ldr-col{display:none}
 
 /* Footer */
 .gfoot{display:flex;align-items:center;justify-content:space-between;padding:5px 10px;flex-shrink:0;background:rgba(0,0,15,.4);border-top:1px solid rgba(60,100,255,.1)}
@@ -321,24 +314,23 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--deep);color:va
   <div id="danger-pop"><div class="danger-msg" id="danger-txt">⚡ KIES SNEL!</div></div>
   <div id="red-flash"></div>
 
-  <!-- 3-column main layout -->
+  <!-- WWTBM layout — vertical, full width -->
   <div class="game-main">
-    <!-- LEFT: Lifelines -->
+    <!-- Lifelines horizontal -->
     <div class="ll-col">
       <button class="ll" id="ll0" onclick="use5050()">½</button>
       <button class="ll" id="ll1" onclick="useBel()">📞</button>
       <button class="ll" id="ll2" onclick="usePub()">👥</button>
     </div>
 
-    <!-- CENTER: Answers top, Question bottom -->
+    <!-- Question above, Answers below — centered -->
     <div class="q-col">
-      <div class="answers" id="g-ans"></div>
       <div class="qcard" id="g-q">–</div>
+      <div class="answers" id="g-ans"></div>
     </div>
-
-    <!-- RIGHT: Money ladder -->
-    <div class="ldr-col" id="ldr-col"></div>
   </div>
+  <!-- Ladder hidden but kept in DOM for JS -->
+  <div class="ldr-col" id="ldr-col"></div>
 
   <!-- Footer -->
   <div class="gfoot">
