@@ -651,21 +651,28 @@ const TRASH=[
 ];
 let _trashTimer=null;
 function showTrashTalk(){
+  if(Math.random()>0.85)return; // 85% kans per vraag
   const lb=loadLB();
-  if(!lb.length)return;
-  const king=lb[0];
-  if(king.name===playerName)return; // niet jezelf pesten
-  if(Math.random()>0.6)return; // 60% kans per vraag
+  let treter;
+  if(lb.length && lb[0].name!==playerName){
+    // Gebruik de #1 van de ranglijst als treter
+    treter={name:lb[0].name, img:lb[0].img};
+  } else {
+    // Geen ranglijst? Random familielid als treter
+    const others=CHARS.filter(c=>c.name!==selChar?.name);
+    const r=others[Math.floor(Math.random()*others.length)];
+    treter={name:r.name, img:r.img};
+  }
   const msg=TRASH[Math.floor(Math.random()*TRASH.length)];
   const img=document.getElementById('tb-avatar');
-  img.src=king.img||'';
-  img.style.display=king.img?'block':'none';
-  document.getElementById('tb-name').textContent=king.name;
+  img.src=treter.img||'';
+  img.style.display=treter.img?'block':'none';
+  document.getElementById('tb-name').textContent=treter.name;
   document.getElementById('tb-msg').textContent='"'+msg+'"';
   const b=document.getElementById('trash-bubble');
   b.classList.add('show');
   clearTimeout(_trashTimer);
-  _trashTimer=setTimeout(()=>b.classList.remove('show'),4500);
+  _trashTimer=setTimeout(()=>b.classList.remove('show'),5000);
 }
 function hideTrashTalk(){
   clearTimeout(_trashTimer);
@@ -725,14 +732,14 @@ const CHAT_FLITS=[
 ];
 let _flitsTimer=null;
 function showChatFlits(){
-  if(Math.random()>0.45)return; // 45% kans
+  // Altijd tonen — elke vraag een familiechat-quote
   const f=CHAT_FLITS[Math.floor(Math.random()*CHAT_FLITS.length)];
   document.getElementById('cf-who').textContent=f.who;
   document.getElementById('cf-msg').textContent='"'+f.msg+'"';
   const el=document.getElementById('chat-flits');
   el.classList.add('show');
   clearTimeout(_flitsTimer);
-  _flitsTimer=setTimeout(()=>el.classList.remove('show'),4000);
+  _flitsTimer=setTimeout(()=>el.classList.remove('show'),4500);
 }
 function hideChatFlits(){clearTimeout(_flitsTimer);document.getElementById('chat-flits').classList.remove('show');}
 
@@ -1326,10 +1333,10 @@ function loadQ(){
   // Show kill button only at last question
   document.getElementById('killbtn').style.display=currentQ===14?'block':'none';
   updateLdr();startTimer();startTension();setEmotion('idle');
-  // Trash talk van de #1 — na 2s
-  setTimeout(showTrashTalk, 2000);
-  // Chat-quote flits — na 3.5s (niet tegelijk met trash talk)
-  setTimeout(showChatFlits, 3500);
+  // Chat-quote flits — na 3s
+  setTimeout(showChatFlits, 3000);
+  // Treter/trash talk — na 5s
+  setTimeout(showTrashTalk, 5000);
   // KOM OP reactie bij vraag 10+ (spanning)
   if(currentQ>=9) setTimeout(()=>showReact('go'), 1200);
 }
